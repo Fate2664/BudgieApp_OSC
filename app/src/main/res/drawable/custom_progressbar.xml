@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background / unfilled portion -->
+    <item android:id="@android:id/background">
+
+        <shape android:shape="rectangle">
+
+            <solid android:color="@color/input_blue" />
+            <corners android:radius="10dp" />
+
+        </shape>
+
+    </item>
+
+
+    <!-- Filled portion -->
+    <item android:id="@android:id/progress">
+
+
+        <scale android:scaleWidth = "100%">
+
+            <shape android:shape="rectangle">
+
+                <solid android:color="@color/budget_blue" />
+                <corners android:radius="10dp" />
+
+            </shape>
+
+        </scale>
+
+    </item>
+
+</layer-list>

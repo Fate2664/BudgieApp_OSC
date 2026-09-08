@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_cream"
+    android:padding="5dp"
+    tools:context=".CreateAccountActivity">
+
+    <TextView
+        android:id="@+id/txtCreateAccountTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="Create Account"
+        android:textAlignment="center"
+        android:textColor="@color/budget_blue"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="130dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtCreateAccountTitle"
+        tools:layout_editor_absoluteX="5dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="50dp"
+
+        app:boxBackgroundMode="outline"
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgLogo"
+        app:startIconDrawable="@drawable/ic_launcher_foreground"
+        app:startIconTint="@color/budget_blue">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etxtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="@color/budget_blue"
+            android:hint="Email ID"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/budget_blue"
+            android:textColorHint="@color/input_blue"
+            android:textSize="18sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginTop="36dp"
+
+        app:hintEnabled="false"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailInputLayout"
+
+        app:startIconDrawable="@drawable/ic_launcher_foreground"
+        app:startIconTint="@color/budget_blue">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etxtPassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Password"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/budget_blue"
+            android:textColorHint="@color/input_blue"
+            android:backgroundTint="@color/budget_blue"
+            android:textSize="18sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCreateAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+
+        android:text="Create Account"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="21sp"
+
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+
+        app:backgroundTint="@color/budget_blue"
+        app:cornerRadius="14dp"
+
+        android:layout_marginTop="58dp"
+
+        app:layout_constraintTop_toBottomOf="@id/passwordInputLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
