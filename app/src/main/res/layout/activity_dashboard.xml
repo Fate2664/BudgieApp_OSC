@@ -37,7 +37,8 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="#00FFFFFF"
-                app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
+                app:srcCompat="@android:drawable/ic_menu_sort_by_size"
+                app:tint="@color/white"/>
 
             <TextView
                 android:id="@+id/txtDashboard"

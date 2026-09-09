@@ -8,4 +8,8 @@
     <color name="input_line">#6F7479</color>
     <color name="background_blue">#9EA8DBFA</color>
     <color name="background_header">#51A3DE</color>
+    <color name="grey_transparent">#9E9E9E</color>
+    <color name="black_transparent">#646464</color>
+    <color name="soft_black">#424242</color>
+    <color name="light_purple">#9A71E4</color>
 </resources>
