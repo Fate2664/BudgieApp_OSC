@@ -12,4 +12,12 @@
     <color name="black_transparent">#646464</color>
     <color name="soft_black">#424242</color>
     <color name="light_purple">#9A71E4</color>
+
+    <!-- Category Colors -->
+    <color name="light_blue">#BF34C4D5</color>
+    <color name="orange">#BFE7B00B</color>
+    <color name="light_green">#BF58CC5C</color>
+    <color name="normal_blue">#BF2196F3</color>
+    <color name="purple">#BF754EB6</color>
+    <color name="light_red">#BFE02B3C</color>
 </resources>
