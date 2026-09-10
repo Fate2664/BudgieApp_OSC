@@ -26,7 +26,7 @@ class DashboardActivity : AppCompatActivity() {
                 CashFlowPeriod("Jun", 6400f, 4600f),
                 CashFlowPeriod("Jul", 4500f, 4000f),
                 CashFlowPeriod("Aug", 5100f, 4400f),
-                CashFlowPeriod("Sep", 5600f, 4300f),
+                CashFlowPeriod("Sep", 5600f, 4300f)
             )
         )
 

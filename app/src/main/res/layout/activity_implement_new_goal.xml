@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_blue"
-    tools:context=".AddTransactionActivity">
+    tools:context=".ImplementNewGoalActivity">
 
     <!-- region Header -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -34,10 +34,10 @@
             tools:src="@android:drawable/ic_menu_revert" />
 
         <TextView
-            android:id="@+id/txtAmount"
+            android:id="@+id/txtHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="R0"
+            android:text="New Goal"
             android:textColor="@color/white"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -80,17 +80,35 @@
             android:orientation="vertical"
             android:paddingHorizontal="20dp">
 
-            <!-- Amount -->
+            <!-- Name -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:text="Amount"
+                android:text="Name"
                 android:textColor="@color/soft_black"
                 android:textSize="16sp" />
 
             <EditText
-                android:id="@+id/etxtAmount"
+                android:id="@+id/etxtName"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:backgroundTint="@color/black"
+                android:hint="New Vehicle"
+                android:paddingStart="0dp"
+                android:textSize="20sp" />
+
+            <!-- Target Amount -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Target Amount"
+                android:textColor="@color/soft_black"
+                android:textSize="16sp"
+                android:layout_marginTop="18dp"/>
+
+            <EditText
+                android:id="@+id/etxtTargetAmount"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:backgroundTint="@color/black"
@@ -98,46 +116,50 @@
                 android:paddingStart="0dp"
                 android:textSize="20sp" />
 
-            <!-- Description -->
+
+            <!-- Saved Already -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:text="Description"
+                android:text="Saved Already"
                 android:textColor="@color/soft_black"
                 android:textSize="16sp" />
 
             <EditText
-                android:id="@+id/etxtDescription"
+                android:id="@+id/etxtSavedAlready"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:backgroundTint="@color/black"
-                android:hint="Note"
+                android:hint="R0"
                 android:paddingStart="0dp"
                 android:textSize="20sp" />
 
-            <!-- Category -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Desired Date -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
                 android:layout_marginTop="18dp"
-                android:text="Category"
-                android:textColor="@color/soft_black"
-                android:textSize="16sp" />
+                android:paddingEnd="12dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:backgroundTint="@color/light_purple"
-                android:text="Add Category"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                app:cornerRadius="20dp"
-                app:icon="@android:drawable/ic_input_add"
-                app:iconGravity="textStart"
-                app:strokeColor="@color/soft_black"
-                app:strokeWidth="1dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Date"
+                    android:textColor="@color/soft_black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/txtDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:text="09 Sep 2026"
+                    android:textSize="20sp"
+                    app:drawableEndCompat="@android:drawable/arrow_down_float" />
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -145,29 +167,11 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/black_transparent" />
 
-            <!-- Payee -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:text="Payee"
-                android:textColor="@color/soft_black"
-                android:textSize="16sp" />
-
-            <EditText
-                android:id="@+id/etxtPayee"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:backgroundTint="@color/black"
-                android:hint="E.g Woolworths"
-                android:paddingStart="0dp"
-                android:textSize="20sp" />
-
-            <!-- Date + Time -->
+            <!-- Color and Icon -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="18dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -180,18 +184,18 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Date"
+                        android:text="Goal Color"
                         android:textColor="@color/soft_black"
                         android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/txtDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
-                        android:text="09 Sep 2026"
-                        android:textSize="20sp"
-                        app:drawableEndCompat="@android:drawable/arrow_down_float" />
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="120dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="5dp"
+                        app:cornerRadius="10dp"
+                        android:backgroundTint="@color/orange"/>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -204,18 +208,19 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Time"
+                        android:text="Icon"
                         android:textColor="@color/soft_black"
                         android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/txtTime"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                    <ImageButton
+                        android:id="@+id/btnIcon"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@android:color/transparent"
                         android:gravity="center_vertical"
-                        android:text="15:28"
-                        android:textSize="20sp"
-                        app:drawableEndCompat="@android:drawable/arrow_down_float" />
+                        app:tint="@color/white"
+                        tools:layout_editor_absoluteX="16dp"
+                        tools:src="@android:drawable/ic_input_add" />
 
                 </LinearLayout>
 
@@ -225,84 +230,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="8dp"
-                android:background="@color/black_transparent" />
+                android:background="@color/black_transparent"
+                />
 
-            <!-- Payment Type -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Payment Type"
-                android:textColor="@color/soft_black"
-                android:textSize="16sp"
-                android:layout_marginTop="24dp"/>
-
-            <TextView
-                android:id="@+id/txtPaymentType"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:gravity="center_vertical"
-                android:text="Cash"
-                android:textSize="20sp"
-                app:drawableEndCompat="@android:drawable/arrow_down_float"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/black_transparent" />
-            
-            <!-- Status -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Status"
-                android:textColor="@color/soft_black"
-                android:textSize="16sp"
-                android:layout_marginTop="24dp"/>
-
-            <TextView
-                android:id="@+id/txtStatus"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:gravity="center_vertical"
-                android:text="Cleared"
-                android:textSize="20sp"
-                app:drawableEndCompat="@android:drawable/arrow_down_float"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/black_transparent" />
-
-            <!-- Attachment -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:text="Add Attachment"
-                android:textColor="@color/soft_black"
-                android:textSize="16sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:backgroundTint="@color/light_blue"
-                android:text="Add Reciept"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                app:cornerRadius="20dp"
-                app:icon="@android:drawable/ic_input_add"
-                app:iconGravity="textStart"
-                app:strokeColor="@color/soft_black"
-                app:strokeWidth="1dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/black_transparent" />
 
         </LinearLayout>
 
