@@ -182,6 +182,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <include
+            android:id="@+id/incomeVsExpensesWidget"
+            layout="@layout/widget_income_vs_expenses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

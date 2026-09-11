@@ -30,6 +30,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="14dp"
         android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="12dp"
         android:elevation="0dp"
         app:strokeColor="@color/black"
@@ -72,8 +73,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:contentDescription="Select Period"
-
-                android:tint="@color/black"
+                app:tint="@color/black"
                 tools:srcCompat="@android:drawable/ic_menu_today" />
 
         </LinearLayout>
@@ -107,7 +107,8 @@
             android:id="@+id/txtTransactionTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="R22 200, 00"
+            android:text="R22 200.00"
+            android:textColor="@color/light_red"
             android:textSize="22sp"
             android:textStyle="bold"/>
 
@@ -118,8 +119,6 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
         android:background="@color/black_transparent"
         app:layout_constraintTop_toBottomOf="@id/totalContainer"
         app:layout_constraintStart_toStartOf="parent"
@@ -130,15 +129,87 @@
         android:id="@+id/recyclerTransactions"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:paddingStart="16dp"
+        android:paddingStart="8dp"
         android:paddingTop="12dp"
-        android:paddingEnd="16dp"
+        android:paddingEnd="8dp"
         android:paddingBottom="24dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@+id/breaker"
+        app:layout_constraintTop_toBottomOf="@+id/transactionTableHeader"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/item_transaction"/>
+
+    <!-- Table Header -->
+    <LinearLayout
+        android:id="@+id/transactionTableHeader"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="#FFFFFF"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintTop_toBottomOf="@id/breaker"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:gravity="start"
+            android:text="Date"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.4"
+            android:gravity="start"
+            android:text="Category"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.3"
+            android:gravity="start"
+            android:text="Payee"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="69dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Attachment"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.3"
+            android:layout_marginEnd="10dp"
+            android:gravity="end"
+            android:text="Amount"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black_transparent"
+        app:layout_constraintTop_toBottomOf="@id/transactionTableHeader"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
