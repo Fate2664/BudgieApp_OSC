@@ -14,7 +14,7 @@
         android:layout_width="0dp"
         android:layout_height="80dp"
         android:background="@color/background_header"
-        android:paddingHorizontal="10dp"
+        android:paddingHorizontal="2dp"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,21 +25,19 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:background="@android:color/transparent"
+            android:contentDescription="Go back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-
-            app:tint="@color/white"
-            tools:layout_editor_absoluteX="16dp"
-            tools:src="@android:drawable/ic_menu_revert" />
-
+            app:srcCompat="@drawable/baseline_arrow_back_24"
+            app:tint="@color/white" />
         <TextView
-            android:id="@+id/txtAmount"
+            android:id="@+id/txtTransactionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="R0"
+            android:text="New Transaction"
             android:textColor="@color/white"
-            android:textSize="30sp"
+            android:textSize="25sp"
             android:textStyle="bold"
 
             app:layout_constraintBottom_toBottomOf="parent"
@@ -57,9 +55,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
 
-            app:tint="@color/white"
-            tools:layout_editor_absoluteX="16dp"
-            tools:src="@android:drawable/ic_input_add" />
+            app:tint="#05FD0D"
+            app:srcCompat="@drawable/baseline_add_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- endregion -->
@@ -126,15 +123,16 @@
                 android:textSize="16sp" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnChooseCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                android:backgroundTint="@color/light_purple"
-                android:text="Add Category"
+                android:backgroundTint="@color/background_header"
+                android:text="Select Category"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 app:cornerRadius="20dp"
-                app:icon="@android:drawable/ic_input_add"
+                app:icon="@drawable/baseline_add_24"
                 app:iconGravity="textStart"
                 app:strokeColor="@color/soft_black"
                 app:strokeWidth="1dp" />
@@ -191,7 +189,7 @@
                         android:gravity="center_vertical"
                         android:text="09 Sep 2026"
                         android:textSize="20sp"
-                        app:drawableEndCompat="@android:drawable/arrow_down_float" />
+                        app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -215,7 +213,7 @@
                         android:gravity="center_vertical"
                         android:text="15:28"
                         android:textSize="20sp"
-                        app:drawableEndCompat="@android:drawable/arrow_down_float" />
+                        app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24" />
 
                 </LinearLayout>
 
@@ -243,7 +241,7 @@
                 android:gravity="center_vertical"
                 android:text="Cash"
                 android:textSize="20sp"
-                app:drawableEndCompat="@android:drawable/arrow_down_float"/>
+                app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24"/>
 
             <View
                 android:layout_width="match_parent"
@@ -267,7 +265,7 @@
                 android:gravity="center_vertical"
                 android:text="Cleared"
                 android:textSize="20sp"
-                app:drawableEndCompat="@android:drawable/arrow_down_float"/>
+                app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24"/>
 
             <View
                 android:layout_width="match_parent"
@@ -285,6 +283,7 @@
                 android:textSize="16sp" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAttachment"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:backgroundTint="@color/light_blue"
@@ -293,7 +292,7 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 app:cornerRadius="20dp"
-                app:icon="@android:drawable/ic_input_add"
+                app:icon="@drawable/baseline_add_24"
                 app:iconGravity="textStart"
                 app:strokeColor="@color/soft_black"
                 app:strokeWidth="1dp" />

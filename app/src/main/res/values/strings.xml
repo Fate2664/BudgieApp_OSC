@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">BudgieApp</string>
+    <string name="transactions_all_time">All time</string>
+    <string name="transactions_income_title">Income Transactions</string>
+    <string name="transactions_expense_title">Expense Transactions</string>
+    <string name="transactions_total_income">Total Income</string>
+    <string name="transactions_total_expenses">Total Expenses</string>
+    <string name="transactions_empty">No transactions of this type yet.</string>
+    <string name="transactions_loading">Loading transactions…</string>
+    <string name="transactions_load_error">Could not load transactions. Go back and try again.</string>
 </resources>

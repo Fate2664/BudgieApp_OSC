@@ -31,7 +31,7 @@
 
             app:tint="@color/white"
             tools:layout_editor_absoluteX="16dp"
-            tools:src="@android:drawable/ic_menu_revert" />
+            app:srcCompat="@drawable/baseline_arrow_back_24" />
 
         <TextView
             android:id="@+id/txtHeader"
@@ -59,7 +59,7 @@
 
             app:tint="@color/white"
             tools:layout_editor_absoluteX="16dp"
-            tools:src="@android:drawable/ic_input_add" />
+            app:srcCompat="@drawable/baseline_add_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- endregion -->
@@ -114,7 +114,7 @@
                 android:gravity="center_vertical"
                 android:text="Monthly"
                 android:textSize="20sp"
-                app:drawableEndCompat="@android:drawable/arrow_down_float"/>
+                app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24"/>
 
             <View
                 android:layout_width="match_parent"
@@ -156,7 +156,7 @@
                 android:gravity="center_vertical"
                 android:text="All"
                 android:textSize="20sp"
-                app:drawableEndCompat="@android:drawable/arrow_down_float"/>
+                app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24"/>
 
             <View
                 android:layout_width="match_parent"

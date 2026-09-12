@@ -31,7 +31,7 @@
 
             app:tint="@color/white"
             tools:layout_editor_absoluteX="16dp"
-            tools:src="@android:drawable/ic_menu_revert" />
+            tools:src="@drawable/baseline_arrow_back_24" />
 
         <TextView
             android:id="@+id/txtHeader"

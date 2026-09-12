@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="LAST 30 DAYS"
+            android:text="NET TOTAL"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/breaker" />
@@ -75,9 +75,11 @@
             app:layout_constraintTop_toBottomOf="@id/txtNetTotal">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/incomeRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:padding="5dp"
+                android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -106,12 +108,14 @@
                     android:layout_width="0dp"
                     android:layout_height="30dp"
                     android:layout_marginTop="12dp"
-                    android:layout_marginEnd="24dp"
+                    android:layout_marginEnd="32dp"
 
                     android:max="100"
-                    android:progress="75"
+                    android:progress="0"
 
                     android:progressDrawable="@drawable/custom_progressbar"
+                    android:progressTint="@color/light_green"
+                    android:progressBackgroundTint="@color/input_blue"
 
                     app:layout_constraintEnd_toEndOf="@id/imgIncomeArrowIcon"
                     app:layout_constraintStart_toStartOf="parent"
@@ -119,11 +123,11 @@
 
                 <ImageView
                     android:id="@+id/imgIncomeArrowIcon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/arrow_down_float"
-                    android:contentDescription="Open expense details"
-                    android:tint="@color/black"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/baseline_arrow_forward_ios_24"
+                    android:contentDescription="Open income transactions"
+                    app:tint="@color/soft_black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/incomeProgress"
                     app:layout_constraintBottom_toBottomOf="@+id/incomeProgress"/>
@@ -141,12 +145,13 @@
             app:layout_constraintTop_toBottomOf="@id/txtNetTotal">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/expensesRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="10dp">
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/txtExpenses"
@@ -173,12 +178,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_marginTop="12dp"
-                    android:layout_marginEnd="24dp"
+                    android:layout_marginEnd="32dp"
 
                     android:max="100"
-                    android:progress="75"
+                    android:progress="0"
 
                     android:progressDrawable="@drawable/custom_progressbar"
+                    android:progressTint="@color/light_red"
+                    android:progressBackgroundTint="@color/input_blue"
 
                     app:layout_constraintEnd_toEndOf="@id/imgExpenseArrowIcon"
                     app:layout_constraintStart_toStartOf="parent"
@@ -186,11 +193,11 @@
 
                 <ImageView
                     android:id="@+id/imgExpenseArrowIcon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/arrow_down_float"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/baseline_arrow_forward_ios_24"
                     android:contentDescription="Open expense details"
-                    android:tint="@color/black"
+                    app:tint="@color/soft_black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/expensesProgress"
                     app:layout_constraintBottom_toBottomOf="@+id/expensesProgress"/>

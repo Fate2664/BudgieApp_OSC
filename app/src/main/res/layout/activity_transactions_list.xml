@@ -64,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Last 30 Days"
+                    android:text="@string/transactions_all_time"
                     android:textSize="17sp"
                     android:textStyle="bold"/>
             </LinearLayout>
@@ -98,7 +98,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Total Expenses"
+            android:id="@+id/txtTransactionTotalLabel"
+            android:text="@string/transactions_total_expenses"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"/>
@@ -107,7 +108,7 @@
             android:id="@+id/txtTransactionTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="R22 200.00"
+            tools:text="R22 200.00"
             android:textColor="@color/light_red"
             android:textSize="22sp"
             android:textStyle="bold"/>
@@ -141,6 +142,17 @@
         tools:listitem="@layout/item_transaction"/>
 
     <!-- Table Header -->
+    <TextView
+        android:id="@+id/txtTransactionsMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/transactionTableHeader"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <LinearLayout
         android:id="@+id/transactionTableHeader"
         android:layout_width="0dp"
