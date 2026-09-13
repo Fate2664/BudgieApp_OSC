@@ -69,7 +69,6 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     private var transactionType = TransactionType.EXPENSE
-
     private val selectedDateTime = Calendar.getInstance()
     private var attachmentUri: Uri? = null
     private val attachmentPicker =
@@ -94,37 +93,7 @@ class AddTransactionActivity : AppCompatActivity() {
             }
         }
 
-    private val categoryColors = listOf(
-        "Red" to Color.parseColor("#E57373"),
-        "Blue" to Color.parseColor("#64B5F6"),
-        "Purple" to Color.parseColor("#BA68C8"),
-        "Orange" to Color.parseColor("#FFB74D"),
-        "Green" to Color.parseColor("#81C784"),
-        "Teal" to Color.parseColor("#4DB6AC"),
-        "Pink" to Color.parseColor("#F06292"),
-        "Yellow" to Color.parseColor("#FFD54F")
-    )
-
-    private val categories =
-        mutableListOf(
-            Category(
-                "food", "Food",
-                Color.parseColor("#E57373")
-            ),
-            Category(
-                "transport", "Transport",
-                Color.parseColor("#64B5F6")
-            ),
-            Category(
-                "shopping", "Shopping",
-                Color.parseColor("#BA68C8")
-            ),
-            Category(
-                "bills", "Bills",
-                Color.parseColor("#FFB74D")
-            )
-        )
-
+    private lateinit var categoryPicker: CategoryPickerHelper
     private var selectedCategory: Category? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -161,14 +130,13 @@ class AddTransactionActivity : AppCompatActivity() {
         //endregion
 
         //region Category
-        loadCategories()
-        val selectedID = savedInstanceState?.getString("selected_category_id")
-        selectedCategory = categories.firstOrNull { it.id == selectedID }
-        val btnCategory = findViewById<MaterialButton>(R.id.btnChooseCategory)
+        categoryPicker = CategoryPickerHelper(
+            activity = this,
+            button = findViewById<MaterialButton>(R.id.btnChooseCategory),
+            onSelected = { category -> selectedCategory = category }
+        )
 
-        selectedCategory?.let { selectCategory(it) }
-
-        btnCategory.setOnClickListener { showCategorySheet() }
+        categoryPicker.bind(savedInstanceState?.getString("selected_category_id"))
         //endregion
 
         //region Date + Time
@@ -295,225 +263,6 @@ class AddTransactionActivity : AppCompatActivity() {
 
             }
         return "Selected attachment"
-    }
-
-    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
-
-    private fun categoryDot(color: Int): GradientDrawable {
-        return GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(color)
-            setStroke(dp(1), Color.DKGRAY)
-            setSize(dp(20), dp(20))
-            setBounds(0, 0, dp(20), dp(20))
-        }
-    }
-
-    private fun selectCategory(category: Category) {
-        selectedCategory = category
-        findViewById<MaterialButton>(R.id.btnChooseCategory).apply {
-            text = category.name
-            icon = categoryDot(category.color)
-            iconTint = null
-        }
-    }
-
-    private fun showCategorySheet() {
-        val sheet = BottomSheetDialog(this)
-        val sheetView = layoutInflater.inflate(R.layout.bottom_sheet_categories, null)
-
-        sheet.setContentView(sheetView)
-        sheet.setTitle("Select Category")
-
-        val listCategories = sheetView.findViewById<ListView>(R.id.listCategories)
-        val adapter = object : ArrayAdapter<Category>(
-            this,
-            android.R.layout.simple_list_item_single_choice,
-            categories
-        ) {
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val row = super.getView(position, convertView, parent) as TextView
-                val category = categories[position]
-
-                row.text = category.name
-                row.setCompoundDrawablesRelative(categoryDot(category.color), null, null, null)
-                row.compoundDrawablePadding = dp(12)
-
-                return row
-            }
-        }
-
-        listCategories.adapter = adapter
-
-        val selectedIndex = categories.indexOfFirst { it.id == selectedCategory?.id }
-
-        if (selectedIndex >= 0) {
-            listCategories.setItemChecked(selectedIndex, true)
-        }
-
-        listCategories.setOnItemClickListener { _, _, position, _ ->
-            selectCategory(categories[position])
-            sheet.dismiss()
-        }
-
-        sheetView.findViewById<MaterialButton>(R.id.btnAddNewCategory)
-            .setOnClickListener {
-                showAddCategoryDialog {
-                    sheet.dismiss()
-                }
-            }
-        sheet.show()
-    }
-
-    private fun showAddCategoryDialog(onCategoryAdded: () -> Unit) {
-        val dialogView = layoutInflater.inflate(R.layout.add_category, null)
-        val input = dialogView.findViewById<EditText>(R.id.etxtCategoryName)
-        val colorGroup = dialogView.findViewById<RadioGroup>(R.id.groupCategoryColors)
-        var selectedColor = categoryColors.first().second
-        val colorsByViewID = mutableMapOf<Int, Int>()
-
-        categoryColors.forEachIndexed { index, (name, color) ->
-            val option = RadioButton(this).apply {
-                id = View.generateViewId()
-                text = name
-                minHeight = dp(48)
-                compoundDrawablePadding = dp(12)
-                setCompoundDrawablesRelative(null, null, categoryDot(color), null)
-            }
-
-            colorsByViewID[option.id] = color
-            colorGroup.addView(
-                option, RadioGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-            )
-
-            if (index == 0) {
-                colorGroup.check(option.id)
-            }
-        }
-
-        colorGroup.setOnCheckedChangeListener { _, checkedID ->
-            colorsByViewID[checkedID]?.let {
-                selectedColor = it
-            }
-        }
-
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle("Add Category")
-            .setView(dialogView)
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Add", null)
-            .create()
-
-        dialog.setOnShowListener {
-            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-                val name = input.text.toString().trim()
-                when {
-                    name.isBlank() -> {
-                        input.error = "Enter a category name"
-                    }
-
-                    categories.any {
-                        it.name.equals(name, ignoreCase = true)
-                    } -> {
-                        input.error = "This category already exists"
-                    }
-
-                    else -> {
-                        val category = Category(
-                            id = UUID.randomUUID().toString(),
-                            name = name,
-                            color = selectedColor
-                        )
-
-                        categories.add(category)
-                        categories.sortBy { it.name.lowercase(Locale.ROOT) }
-                        saveCategories()
-
-                        selectCategory(category)
-                        dialog.dismiss()
-                        onCategoryAdded()
-                    }
-                }
-            }
-        }
-        dialog.show()
-    }
-
-    private fun saveCategories() {
-        val array = JSONArray()
-
-        categories.forEach { category ->
-            array.put(JSONObject().apply {
-                put("id", category.id)
-                put("name", category.name)
-                put("color", category.color)
-            })
-        }
-
-        getSharedPreferences("categories", MODE_PRIVATE)
-            .edit()
-            .putString("categories_json", array.toString())
-            .remove("names")
-            .apply()
-    }
-
-    private fun loadCategories() {
-        val preferences = getSharedPreferences("categories", MODE_PRIVATE)
-        val savedJson = preferences.getString("categories_json", null)
-            ?: preferences.getString("categories_json", null)
-
-        if (savedJson != null) {
-            try {
-                val array = JSONArray(savedJson)
-                val loadedCategories = mutableListOf<Category>()
-
-                for (index in 0 until array.length()) {
-                    val item = array.getJSONObject(index)
-
-                    loadedCategories.add(
-                        Category(
-                            id = item.getString("id"),
-                            name = item.getString("name"),
-                            color = item.getInt("color")
-                        )
-                    )
-                }
-
-                categories.clear()
-                categories.addAll(loadedCategories)
-                categories.sortBy { it.name.lowercase(Locale.ROOT) }
-            } catch (exception: org.json.JSONException) {
-                Toast.makeText(
-                    this,
-                    "Could not load saved categories",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-
-            return
-        }
-
-        preferences.getStringSet("names", null)?.let { oldNames ->
-            val migrated = oldNames.sorted().mapIndexed { index, name ->
-                val matchingDefault = categories.firstOrNull {
-                    it.name.equals(name, ignoreCase = true)
-                }
-
-                matchingDefault ?: Category(
-                    id = UUID.randomUUID().toString(),
-                    name = name,
-                    color = categoryColors[index % categoryColors.size].second
-                )
-            }
-
-            categories.clear()
-            categories.addAll(migrated)
-        }
-
-        saveCategories()
     }
 
     private fun saveTransaction() {

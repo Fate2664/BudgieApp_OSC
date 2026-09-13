@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/goalContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="110dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardGoalIcon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+
+        app:cardBackgroundColor="@color/light_blue"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/imgGoalIcon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:contentDescription="Vehicle goal"
+            android:src="@drawable/baseline_directions_car_24"
+            app:tint="@color/white"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/txtGoalName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="10dp"
+        android:text="New Vehicle"
+        android:textColor="@color/soft_black"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/cardGoalIcon"
+        app:layout_constraintEnd_toStartOf="@+id/txtGoalPercentage"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/txtGoalTargetDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:text="Target date: 24/09/2026"
+        android:textColor="@color/soft_black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/cardGoalIcon"
+        app:layout_constraintEnd_toStartOf="@id/txtGoalPercentage"
+        app:layout_constraintTop_toBottomOf="@id/txtGoalName"/>
+
+    <TextView
+        android:id="@+id/txtGoalSavedAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:text="R5 000"
+        android:textColor="@color/soft_black"
+        android:textSize="19sp"
+        app:layout_constraintStart_toEndOf="@id/cardGoalIcon"
+        app:layout_constraintTop_toBottomOf="@id/txtGoalTargetDate"/>
+
+    <TextView
+        android:id="@+id/txtGoalPercentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:text="71%"
+        android:textColor="@color/soft_black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtGoalSavedAmount"
+        app:layout_constraintBottom_toBottomOf="@+id/txtGoalSavedAmount"/>
+
+    <ProgressBar
+        android:id="@+id/goalProgress"
+        style="?android:progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="5dp"
+        android:max="100"
+        android:progress="71"
+        android:progressDrawable="@drawable/custom_progressbar"
+        app:layout_constraintStart_toStartOf="@+id/txtGoalSavedAmount"
+        app:layout_constraintEnd_toEndOf="@+id/txtGoalPercentage"
+        app:layout_constraintTop_toBottomOf="@+id/txtGoalSavedAmount"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

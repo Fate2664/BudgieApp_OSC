@@ -13,11 +13,21 @@
     <color name="soft_black">#424242</color>
     <color name="light_purple">#9A71E4</color>
 
-    <!-- Category Colors -->
+    <!-- Goal Colors -->
     <color name="light_blue">#BF34C4D5</color>
     <color name="orange">#BFE7B00B</color>
     <color name="light_green">#BF58CC5C</color>
     <color name="normal_blue">#BF2196F3</color>
     <color name="purple">#BF754EB6</color>
     <color name="light_red">#BFE02B3C</color>
+
+    <!-- Category Colors -->
+    <color name="category_red">#F03E3E</color>
+    <color name="category_blue">#00BCD4</color>
+    <color name="category_purple">#9C27B0</color>
+    <color name="category_orange">#FF9800</color>
+    <color name="category_green">#4CAF50</color>
+    <color name="category_teal">#2196F3</color>
+    <color name="category_pink">#F06292</color>
+    <color name="category_yellow">#FFEB3B</color>
 </resources>
