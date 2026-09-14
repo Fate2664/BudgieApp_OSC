@@ -7,7 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class DashboardPagerAdapter(
     private val onAccountsCreated: (View) -> Unit,
-    private val onBudgetsCreated: (View) -> Unit) :
+    private val onBudgetsCreated: (View) -> Unit
+) :
     RecyclerView.Adapter<DashboardPagerAdapter.PageHolder>() {
 
     class PageHolder(view: View) : RecyclerView.ViewHolder(view)
@@ -33,6 +34,16 @@ class DashboardPagerAdapter(
                         android.content.Intent(
                             view.context,
                             AddBudgetActivity::class.java
+                        )
+                    )
+                }
+
+            view.findViewById<View>(R.id.btnAddNewGoal)
+                .setOnClickListener {
+                    view.context.startActivity(
+                        android.content.Intent(
+                            view.context,
+                            AddNewGoalActivity::class.java
                         )
                     )
                 }

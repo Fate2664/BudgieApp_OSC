@@ -10,7 +10,7 @@ import androidx.sqlite.driver.AndroidSQLiteDriver
 
 @Database(
     entities = [TransactionEntity::class, BudgetEntity::class, GoalEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 
@@ -62,6 +62,14 @@ abstract class BudgieDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override suspend fun migrate(connection: SQLiteConnection) {
+                connection.prepare(
+                    "ALTER TABLE transactions ADD COLUMN goalId TEXT"
+                ).use { it.step() }
+            }
+        }
+
         fun getInstance(context: Context): BudgieDatabase {
             return instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder<BudgieDatabase>(
@@ -69,7 +77,7 @@ abstract class BudgieDatabase : RoomDatabase() {
                     "budgie.db"
                 )
                     .setDriver(AndroidSQLiteDriver())
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build()
                     .also { instance = it }
             }

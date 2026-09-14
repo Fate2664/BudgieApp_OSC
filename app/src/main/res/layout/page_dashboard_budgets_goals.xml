@@ -20,6 +20,12 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
 
+        <include
+            android:id="@+id/goalsWidget"
+            layout="@layout/widget_goals"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

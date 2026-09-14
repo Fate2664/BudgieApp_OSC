@@ -30,8 +30,7 @@
             app:layout_constraintTop_toTopOf="parent"
 
             app:tint="@color/white"
-            tools:layout_editor_absoluteX="16dp"
-            tools:src="@android:drawable/ic_menu_revert" />
+            android:src="@drawable/baseline_arrow_back_24" />
 
         <TextView
             android:id="@+id/txtHeader"
@@ -58,8 +57,7 @@
             app:layout_constraintTop_toTopOf="parent"
 
             app:tint="@color/white"
-            tools:layout_editor_absoluteX="16dp"
-            tools:src="@android:drawable/ic_input_add" />
+            android:src="@drawable/baseline_add_24"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- endregion -->
@@ -160,7 +158,7 @@
                     android:gravity="center_vertical"
                     android:text="09 Sep 2026"
                     android:textSize="20sp"
-                    app:drawableEndCompat="@android:drawable/arrow_down_float" />
+                    app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24" />
             </LinearLayout>
 
             <View
@@ -222,8 +220,7 @@
                         android:background="@android:color/transparent"
                         android:gravity="center_vertical"
                         app:tint="@color/white"
-                        tools:layout_editor_absoluteX="16dp"
-                        tools:src="@android:drawable/ic_input_add" />
+                        android:src="@drawable/baseline_savings_24" />
 
                 </LinearLayout>
 

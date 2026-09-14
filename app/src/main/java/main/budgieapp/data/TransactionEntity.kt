@@ -16,5 +16,6 @@ data class TransactionEntity(
     val dateTimeMillis: Long,
     val paymentType: String,
     val status: String,
-    val attachmentUri: String?
+    val attachmentUri: String?,
+    val goalId: String? = null
 )

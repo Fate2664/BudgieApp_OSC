@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import main.budgieapp.widgets.BudgetsWidget
 import main.budgieapp.widgets.CashFlowPeriod
 import main.budgieapp.widgets.CashFlowWidget
+import main.budgieapp.widgets.GoalsWidget
 import main.budgieapp.widgets.IncomeVsExpensesWidget
 
 class DashboardActivity : AppCompatActivity() {
@@ -86,7 +87,7 @@ class DashboardActivity : AppCompatActivity() {
         pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 updateSelectedTab(position)
-                if (position == 1){
+                if (position == 1) {
                     refreshBudgetsPage()
                 }
 
@@ -128,7 +129,7 @@ class DashboardActivity : AppCompatActivity() {
         )
     }
 
-    private fun refreshAccountsPage(){
+    private fun refreshAccountsPage() {
         val page = accountsPage ?: return
 
         lifecycleScope.launch {
@@ -136,14 +137,22 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun refreshBudgetsPage(){
+    private fun refreshBudgetsPage() {
         val page = budgetsPage ?: return
 
         budgetsRefreshJob?.cancel()
         budgetsRefreshJob = lifecycleScope.launch {
-            BudgetsWidget.refresh(
-                page.findViewById<View>(R.id.budgetsWidget)
-            )
+            launch {
+                BudgetsWidget.refresh(
+                    page.findViewById<View>(R.id.budgetsWidget)
+                )
+            }
+
+            launch {
+                GoalsWidget.refresh(
+                    page.findViewById<View>(R.id.goalsWidget)
+                )
+            }
         }
     }
 

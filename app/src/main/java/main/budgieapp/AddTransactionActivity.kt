@@ -66,8 +66,12 @@ class AddTransactionActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_TRANSACTION_TYPE = "transaction_type"
+        const val EXTRA_GOAL_ID = "extra_goal_id"
+        const val EXTRA_GOAL_NAME = "extra_goal_name"
     }
 
+    private var linkedGoalId: String? = null
+    private var linkedGoalName: String? = null
     private var transactionType = TransactionType.EXPENSE
     private val selectedDateTime = Calendar.getInstance()
     private var attachmentUri: Uri? = null
@@ -101,16 +105,34 @@ class AddTransactionActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_add_transaction)
 
+        linkedGoalId =
+            savedInstanceState?.getString(EXTRA_GOAL_ID) ?: intent.getStringExtra(EXTRA_GOAL_ID)
+        linkedGoalName =
+            savedInstanceState?.getString(EXTRA_GOAL_NAME) ?: intent.getStringExtra(EXTRA_GOAL_NAME)
+
         val typeName = intent.getStringExtra(EXTRA_TRANSACTION_TYPE)
 
-        transactionType =
+        transactionType = if (linkedGoalId != null) {
+            TransactionType.EXPENSE
+        } else
             TransactionType.entries.firstOrNull { it.name == typeName } ?: TransactionType.EXPENSE
 
         findViewById<TextView>(R.id.txtTransactionTitle).text =
-            when (transactionType) {
-                TransactionType.INCOME -> "New Income Record"
-                TransactionType.EXPENSE -> "New Expense Record"
+            if (linkedGoalId != null) {
+                "Add Goal Funds"
+            } else {
+                when (transactionType) {
+                    TransactionType.INCOME -> "New Income Record"
+                    TransactionType.EXPENSE -> "New Expense Record"
+                }
             }
+
+        if (savedInstanceState == null && linkedGoalId != null) {
+            findViewById<EditText>(R.id.etxtDescription).setText(
+                "Contribution to ${linkedGoalName ?: "goal"}"
+            )
+            findViewById<TextView>(R.id.txtStatus).text = "Cleared"
+        }
 
         //region Saving
         transactionId = savedInstanceState?.getString("transaction_id") ?: transactionId
@@ -238,6 +260,9 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(EXTRA_GOAL_ID, linkedGoalId)
+        outState.putString(EXTRA_GOAL_NAME, linkedGoalName)
+
         outState.putString("transaction_id", transactionId)
         outState.putString("selected_category_id", selectedCategory?.id)
         outState.putLong("transaction_date_time", selectedDateTime.timeInMillis)
@@ -313,7 +338,8 @@ class AddTransactionActivity : AppCompatActivity() {
             dateTimeMillis = selectedDateTime.timeInMillis,
             paymentType = findViewById<TextView>(R.id.txtPaymentType).text.toString(),
             status = findViewById<TextView>(R.id.txtStatus).text.toString(),
-            attachmentUri = attachmentUri?.toString()
+            attachmentUri = attachmentUri?.toString(),
+            goalId = linkedGoalId
         )
 
         val confirmButton = findViewById<ImageButton>(R.id.btnConfirm)
@@ -322,7 +348,19 @@ class AddTransactionActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                database.transactionDao().insert(transaction)
+                val goalId = transaction.goalId
+
+                if (goalId != null && database.goalDao().findById(goalId) ==
+                    null) {
+                    Toast.makeText(
+                        this@AddTransactionActivity,
+                        "This goal no longer exists",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@launch
+                }
+
+                database.transactionDao().insertIfAbsent(transaction)
                 Toast.makeText(this@AddTransactionActivity, "Transaction saved", Toast.LENGTH_SHORT)
                     .show()
                 finish()

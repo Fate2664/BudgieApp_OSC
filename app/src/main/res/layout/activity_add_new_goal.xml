@@ -30,8 +30,7 @@
             app:layout_constraintTop_toTopOf="parent"
 
             app:tint="@color/white"
-            tools:layout_editor_absoluteX="16dp"
-            tools:src="@drawable/baseline_arrow_back_24" />
+            android:src="@drawable/baseline_arrow_back_24"/>
 
         <TextView
             android:id="@+id/txtHeader"
@@ -157,7 +156,8 @@
                             android:layout_height="40dp"
                             android:layout_gravity="center"
                             android:contentDescription="House"
-                            app:tint="@color/white"/>
+                            app:tint="@color/white"
+                            android:src="@drawable/houseicon"/>
 
                     </com.google.android.material.card.MaterialCardView>
 
@@ -193,7 +193,8 @@
                             android:layout_height="40dp"
                             android:layout_gravity="center"
                             android:contentDescription="Vehicle"
-                            app:tint="@color/white"/>
+                            app:tint="@color/white"
+                            android:src="@drawable/baseline_directions_car_24"/>
 
                     </com.google.android.material.card.MaterialCardView>
 
@@ -229,7 +230,8 @@
                             android:layout_height="40dp"
                             android:layout_gravity="center"
                             android:contentDescription="Holiday"
-                            app:tint="@color/white"/>
+                            app:tint="@color/white"
+                            android:src="@drawable/holidayicon"/>
 
                     </com.google.android.material.card.MaterialCardView>
 
@@ -265,7 +267,8 @@
                             android:layout_height="40dp"
                             android:layout_gravity="center"
                             android:contentDescription="Education"
-                            app:tint="@color/white"/>
+                            app:tint="@color/white"
+                            android:src="@drawable/baseline_school_24"/>
 
                     </com.google.android.material.card.MaterialCardView>
 
@@ -301,7 +304,8 @@
                             android:layout_height="40dp"
                             android:layout_gravity="center"
                             android:contentDescription="Emergency"
-                            app:tint="@color/white"/>
+                            app:tint="@color/white"
+                            android:src="@drawable/baseline_savings_24"/>
 
                     </com.google.android.material.card.MaterialCardView>
 
@@ -337,7 +341,8 @@
                             android:layout_height="40dp"
                             android:layout_gravity="center"
                             android:contentDescription="Healthcare"
-                            app:tint="@color/white"/>
+                            app:tint="@color/white"
+                            android:src="@drawable/baseline_health_and_safety_24"/>
 
                     </com.google.android.material.card.MaterialCardView>
 
