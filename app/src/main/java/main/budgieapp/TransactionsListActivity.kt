@@ -1,8 +1,10 @@
 package main.budgieapp
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,12 +17,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import main.budgieapp.data.BudgieDatabase
 import main.budgieapp.data.TransactionAdapter
 import org.w3c.dom.Text
 import java.math.BigDecimal
 import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class TransactionsListActivity : AppCompatActivity() {
@@ -33,6 +39,15 @@ class TransactionsListActivity : AppCompatActivity() {
     private lateinit var recycler: RecyclerView
     private lateinit var message: TextView
     private lateinit var total: TextView
+
+    private lateinit var fromDateText: TextView
+    private lateinit var toDateText: TextView
+
+    private var fromDate: LocalDate? = null
+    private var toDate: LocalDate? = null
+    private var loadJob: Job? = null
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +90,21 @@ class TransactionsListActivity : AppCompatActivity() {
         message = findViewById(R.id.txtTransactionsMessage)
         recycler = findViewById(R.id.recyclerTransactions)
         recycler.layoutManager = LinearLayoutManager(this)
+        fromDateText = findViewById(R.id.txtSelectedFromDate)
+        toDateText = findViewById(R.id.txtSelectedToDate)
+
+        fromDate = savedInstanceState?.getString("filter_from_date")?.let { LocalDate.parse(it) }
+        toDate = savedInstanceState?.getString("filter_to_date")?.let { LocalDate.parse(it) }
+
+        updateDateLabels()
+
+        fromDateText.setOnClickListener {
+            showDatePicker(isFromDate = true)
+        }
+
+        toDateText.setOnClickListener {
+            showDatePicker(isFromDate = false)
+        }
     }
 
     override fun onStart() {
@@ -83,17 +113,27 @@ class TransactionsListActivity : AppCompatActivity() {
     }
 
     private fun loadTransactions() {
+        loadJob?.cancel()
+        val zone = ZoneId.systemDefault()
+        val startMillis = fromDate?.atStartOfDay(zone)?.toInstant()?.toEpochMilli()
+        val endExclusiveMillis =
+            toDate?.plusDays(1)?.atStartOfDay(zone)?.toInstant()?.toEpochMilli()
         message.setText(R.string.transactions_loading)
         message.isVisible = true
         recycler.isVisible = false
         total.text = ""
 
-        lifecycleScope.launch {
+        loadJob = lifecycleScope.launch {
             try {
                 val transactions = BudgieDatabase
                     .getInstance(applicationContext)
                     .transactionDao()
                     .getByType(transactionType.name)
+                    .filter { transaction ->
+                        val timestamp = transaction.dateTimeMillis
+                        (startMillis == null || timestamp >= startMillis) &&
+                                (endExclusiveMillis == null || timestamp < endExclusiveMillis)
+                    }
 
                 recycler.adapter = TransactionAdapter(transactions)
                 recycler.isVisible = transactions.isNotEmpty()
@@ -107,14 +147,75 @@ class TransactionsListActivity : AppCompatActivity() {
                 total.text = NumberFormat
                     .getCurrencyInstance(Locale.forLanguageTag("en-ZA"))
                     .format(totalAmount)
-            }catch (cancelled: CancellationException){
+            } catch (cancelled: CancellationException) {
                 throw cancelled
-            }catch (error: Exception){
+            } catch (error: Exception) {
                 Log.e("TransactionsList", "Could not load transactions", error)
                 message.setText(R.string.transactions_load_error)
                 message.isVisible = true
             }
         }
+    }
+
+    private fun updateDateLabels() {
+        fromDateText.text = fromDate?.format(dateFormatter) ?: "Any date"
+        toDateText.text = toDate?.format(dateFormatter) ?: "Any date"
+    }
+
+    private fun showDatePicker(isFromDate: Boolean) {
+        val initialDate = if (isFromDate) {
+            fromDate ?: toDate ?: LocalDate.now()
+        } else {
+            toDate ?: fromDate ?: LocalDate.now()
+        }
+
+        DatePickerDialog(
+            this, { _, year, month, day ->
+                val selectedDate = LocalDate.of(year, month + 1, day)
+                val invalidRange = if (isFromDate) {
+                    toDate?.let { selectedDate.isAfter(it) } ?: false
+                } else {
+                    fromDate?.let { selectedDate.isBefore(it) } ?: false
+                }
+
+                if (invalidRange) {
+                    Toast.makeText(
+                        this,
+                        "From date must be on or before To date.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    if (isFromDate) {
+                        fromDate = selectedDate
+                    } else {
+                        toDate = selectedDate
+                    }
+
+                    updateDateLabels()
+                    loadTransactions()
+                }
+            },
+            initialDate.year,
+            initialDate.monthValue - 1,
+            initialDate.dayOfMonth
+        ).apply {
+            setButton(android.content.DialogInterface.BUTTON_NEUTRAL, "Clear") { _, _ ->
+                if (isFromDate) {
+                    fromDate = null
+                } else {
+                    toDate = null
+                }
+
+                updateDateLabels()
+                loadTransactions()
+            }
+        }.show()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("filter_from_date", fromDate?.toString())
+        outState.putString("filter_to_date", toDate?.toString())
+        super.onSaveInstanceState(outState)
     }
 
 }

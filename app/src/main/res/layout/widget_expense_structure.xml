@@ -10,8 +10,7 @@
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
     app:strokeColor="#EEEEEE"
-    app:strokeWidth="1dp"
-    tools:context=".widgets.ExpenseStructureWidget">
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -52,17 +51,23 @@
             android:id="@+id/txtTimePeriod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:layout_marginTop="8dp"
-            android:text="LAST 30 DAYS"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="4dp"
+            android:text="Last 30 days"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/breaker" />
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:drawablePadding="4dp"
+            app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24" />
 
         <TextView
             android:id="@+id/txtTotalExpenses"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="R225 000,00"
+            android:text="-"
             android:textSize="24sp"
             android:textStyle="bold"/>
 

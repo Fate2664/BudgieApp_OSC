@@ -19,5 +19,15 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertIfAbsent(transaction: TransactionEntity): Long
 
+    @Query("""
+         SELECT * FROM transactions
+         WHERE dateTimeMillis >= :startMillis
+           AND dateTimeMillis <= :endMillis
+         ORDER BY dateTimeMillis ASC
+     """)
+    suspend fun getInRange(
+        startMillis: Long,
+        endMillis: Long
+    ): List<TransactionEntity>
 
 }

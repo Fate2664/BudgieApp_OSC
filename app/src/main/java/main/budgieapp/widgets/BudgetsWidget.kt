@@ -7,13 +7,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import main.budgieapp.Category
 import main.budgieapp.R
 import main.budgieapp.data.BudgieDatabase
@@ -32,6 +38,7 @@ import java.util.Locale
 
 object BudgetsWidget {
 
+    private val periodOptions = listOf("Daily", "Weekly", "Monthly", "Yearly")
     private fun periodStart(period: String, today: LocalDate): LocalDate = when (period) {
         "Daily" -> today
         "Weekly" -> today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -54,11 +61,11 @@ object BudgetsWidget {
             .getSharedPreferences("categories", Context.MODE_PRIVATE)
             .getString("categories_json", null) ?: return emptyMap()
 
-        return try{
+        return try {
             val array = JSONArray(savedJson)
 
             buildMap {
-                for (index in 0 until array.length()){
+                for (index in 0 until array.length()) {
                     val item = array.getJSONObject(index)
                     val category = Category(
                         id = item.getString("id"),
@@ -81,7 +88,36 @@ object BudgetsWidget {
         val percentageText = root.findViewById<TextView>(R.id.txtBudgetPercentage)
         val summaryBar = root.findViewById<ProgressBar>(R.id.progressMonthlyBudget)
 
-        root.findViewById<TextView>(R.id.txtTimePeriod).text = "MONTHLY BUDGETS · THIS MONTH"
+        val preferences = root.context.getSharedPreferences("budget_widget", Context.MODE_PRIVATE)
+
+        val selectedPeriod = preferences.getString("selected_period", "Monthly")
+            ?.takeIf { it in periodOptions }
+            ?: "Monthly"
+
+        val timePeriodText = root.findViewById<TextView>(R.id.txtTimePeriod)
+        timePeriodText.text = "${selectedPeriod.uppercase(Locale.ROOT)} BUDGETS"
+
+        timePeriodText.setOnClickListener { anchor -> val popup = PopupMenu(root.context, anchor)
+            periodOptions.forEach { period -> popup.menu.add(period).apply {
+                    isCheckable = true
+                    isChecked = period == selectedPeriod
+                    setOnMenuItemClickListener { val owner = root.findViewTreeLifecycleOwner()
+                        if (owner != null && period != selectedPeriod) {
+                            preferences.edit()
+                                .putString("selected_period", period)
+                                .apply()
+
+                            owner.lifecycleScope.launch {
+                                refresh(root)
+                            }
+                        }
+                        true
+                    }
+                }
+            }
+
+            popup.show()
+        }
 
         container.removeAllViews()
         remainingText.text = "Loading budgets…"
@@ -91,7 +127,7 @@ object BudgetsWidget {
 
         try {
             val database = BudgieDatabase.getInstance(root.context)
-            val budgets = database.budgetDao().getAll()
+            val budgets = database.budgetDao().getAll().filter { it.period == selectedPeriod }
             val expenses = database.transactionDao().getByType("EXPENSE")
             val categoriesById = loadCategoriesById(root.context)
             val zone = ZoneId.systemDefault()
@@ -103,8 +139,8 @@ object BudgetsWidget {
 
             fun money(cents: BigDecimal): String = currency.format(cents.movePointLeft(2))
 
-            var monthlyLimit = BigDecimal.ZERO
-            var monthlySpent = BigDecimal.ZERO
+            var totalLimit = BigDecimal.ZERO
+            var totalSpent = BigDecimal.ZERO
 
             for (budget in budgets) {
                 val category = categoriesById[budget.categoryId]
@@ -153,46 +189,98 @@ object BudgetsWidget {
                         )
                     )
                 }
+                row.findViewById<View>(R.id.btnOptions).apply {
+                    contentDescription = "Options for ${budget.name}"
+                    setOnClickListener { anchor ->
+                        val popup = PopupMenu(root.context, anchor)
+                        popup.menu.add("Delete budget").setOnMenuItemClickListener {
+                            MaterialAlertDialogBuilder(root.context)
+                                .setTitle("Delete budget?")
+                                .setMessage("Delete \"${budget.name}\"? This cannot be undone. " + "Existing transactions will be kept.")
+                                .setNegativeButton("Cancel", null)
+                                .setPositiveButton("Confirm") { _, _ ->
+                                    val lifecycleOwner = root.findViewTreeLifecycleOwner()
+
+                                    if (lifecycleOwner == null) {
+                                        Toast.makeText(
+                                            root.context,
+                                            "Could not delete budget. Please try again",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        lifecycleOwner.lifecycleScope.launch {
+                                            anchor.isEnabled = false
+
+                                            try {
+                                                database.goalDao().deleteById(budget.id)
+                                                GoalsWidget.refresh(root)
+                                            } catch (cancelled: CancellationException) {
+                                                throw cancelled
+                                            } catch (error: Exception) {
+                                                Log.e(
+                                                    "BudgetWidget",
+                                                    "Could not delete budget",
+                                                    error
+                                                )
+
+                                                Toast.makeText(
+                                                    root.context,
+                                                    "Could not delete budget. Please try again.",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } finally {
+                                                anchor.isEnabled = true
+                                            }
+                                        }
+                                    }
+                                }
+                                .show()
+
+                            true
+                        }
+
+                        popup.show()
+                    }
+                }
+
                 container.addView(row)
 
-                if (budget.period == "Monthly") {
-                    monthlyLimit = monthlyLimit.add(limit)
-                    monthlySpent = monthlySpent.add(spent)
-                }
+                totalLimit = totalLimit.add(limit)
+                totalSpent = totalSpent.add(spent)
             }
 
             if (budgets.isEmpty()) {
                 container.addView(TextView(root.context).apply {
-                    text = "No budgets yet. Tap + to create one."
+                    text = "No ${selectedPeriod.lowercase(Locale.ROOT)} budgets yet. Tap + to create one."
                     setTextColor(root.context.getColor(R.color.soft_black))
                     textSize = 15f
                 })
             }
 
-            val remaining = monthlyLimit.subtract(monthlySpent)
+            val remaining = totalLimit.subtract(totalSpent)
 
             remainingText.text = when {
-                monthlyLimit.signum() == 0 -> "No monthly budgets yet"
+                budgets.isEmpty() -> "No ${selectedPeriod.lowercase(Locale.ROOT)} budgets yet"
                 remaining.signum() < 0 -> "${money(remaining.abs())} over limit"
                 else -> "${money(remaining)} remaining"
             }
 
-            spentText.text = "${money(monthlySpent)} spent of ${money(monthlyLimit)}"
+            spentText.text = "${money(totalSpent)} spent of ${money(totalLimit)}"
 
             summaryBar.max = 100
-            summaryBar.progress = percentage(monthlySpent, monthlyLimit)
+            summaryBar.progress = percentage(totalSpent, totalLimit)
 
-            percentageText.text = if (monthlyLimit.signum() > 0) {
-                val used = monthlySpent
+            percentageText.text = if (totalLimit.signum() > 0) {
+                val used = totalSpent
                     .multiply(BigDecimal.valueOf(100))
-                    .divide(monthlyLimit, 0, RoundingMode.HALF_UP)
+                    .divide(totalLimit, 0, RoundingMode.HALF_UP)
                 "$used% used"
             } else {
                 ""
             }
-        } catch (cancelled: CancellationException){
+        } catch (cancelled: CancellationException) {
             throw cancelled
-        }catch (error: Exception){
+        } catch (error: Exception) {
             Log.e("BudgetsWidget", "Could not load budgets", error)
             container.removeAllViews()
             remainingText.text = "Could not load budgets"

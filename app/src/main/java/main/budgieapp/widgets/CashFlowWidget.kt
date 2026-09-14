@@ -2,6 +2,7 @@ package main.budgieapp.widgets
 
 import android.graphics.Color
 import android.view.View
+import android.widget.PopupMenu
 import android.widget.TextView
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.Legend
@@ -18,7 +19,14 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.button.MaterialButtonToggleGroup
 import main.budgieapp.R
+import main.budgieapp.TransactionType
+import main.budgieapp.data.TransactionEntity
 import java.text.DecimalFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.max
@@ -30,9 +38,24 @@ data class CashFlowPeriod(
     val expense: Float
 )
 
+enum class CashFlowTimeRange(val title: String) {
+    LAST_30_DAYS("Last 30 days"),
+    LAST_7_DAYS("Last 7 days"),
+    LAST_6_MONTHS("Last 6 months");
+
+    fun startDate(today: LocalDate): LocalDate {
+        return when (this) {
+            LAST_30_DAYS -> today.minusDays(29)
+            LAST_7_DAYS -> today.minusDays(6)
+            LAST_6_MONTHS -> today.withDayOfMonth(1).minusMonths(5)
+        }
+    }
+}
+
 class CashFlowWidget(private val rootView: View) {
     //Find the combined chart component - combined charts can display bars and lines together
     private val chart: CombinedChart = rootView.findViewById(R.id.cashFlowChart)
+
     //Find the text view that displays the date range
     private var periodsLabel: TextView = rootView.findViewById(R.id.txtTimePeriod)
 
@@ -44,6 +67,7 @@ class CashFlowWidget(private val rootView: View) {
 
     //Store the data in a list
     private var periods: List<CashFlowPeriod> = emptyList()
+
     //Cumulative boolean check
     private var cumulative = false
 
@@ -89,9 +113,9 @@ class CashFlowWidget(private val rootView: View) {
 
                     override fun getFormattedValue(value: Float): String? {
                         //Ignore the sign and use "k" format. E.g. 1500 -> 1.5k
-                        return if (abs(value) >= 1000f){
+                        return if (abs(value) >= 1000f) {
                             "${format.format(value / 1000f)}k"
-                        }else {
+                        } else {
                             format.format(value)
                         }
                     }
@@ -124,10 +148,12 @@ class CashFlowWidget(private val rootView: View) {
                 yOffset = 12f
 
                 //Create the labels and ordering. We use the helper function that we made
-                setCustom(listOf(LegendEntry("Cash flow", cashFlowColor),
-                    LegendEntry("Incomes", incomeColor),
-                    LegendEntry("Expenses", expenseColor)
-                )
+                setCustom(
+                    listOf(
+                        LegendEntry("Cash flow", cashFlowColor),
+                        LegendEntry("Incomes", incomeColor),
+                        LegendEntry("Expenses", expenseColor)
+                    )
                 )
             }
 
@@ -148,13 +174,79 @@ class CashFlowWidget(private val rootView: View) {
     //Public function called by the Dashboard Activity to supply data
     fun SetData(data: List<CashFlowPeriod>) {
         periods = data.toList()
-
-        periodsLabel.text = when {
-            periods.isEmpty() -> "No Data"
-            periods.size == 1 -> periods.first().label
-            else -> "${periods.first().label} - ${periods.last().label}"
-        }
         render()
+    }
+
+    fun setupTimePeriodDropdown(
+        initialRange: CashFlowTimeRange,
+        onRangeSelected: (CashFlowTimeRange) -> Unit
+    ) {
+        periodsLabel.text = initialRange.title
+        periodsLabel.setOnClickListener {
+            val options = CashFlowTimeRange.entries
+            val popup = PopupMenu(rootView.context, periodsLabel)
+
+            options.forEachIndexed { index, range -> popup.menu.add(0, index, index, range.title) }
+            popup.setOnMenuItemClickListener { item ->
+                val selectedRange = options[item.itemId]
+                periodsLabel.text = selectedRange.title
+                onRangeSelected(selectedRange)
+                true
+            }
+            popup.show()
+        }
+    }
+
+    fun setTransactions(
+        transactions: List<TransactionEntity>,
+        range: CashFlowTimeRange,
+        today: LocalDate,
+        zone: ZoneId
+    ) {
+        val start = range.startDate(today)
+        val monthly = range == CashFlowTimeRange.LAST_6_MONTHS
+        val count = when (range) {
+            CashFlowTimeRange.LAST_30_DAYS -> 30
+            CashFlowTimeRange.LAST_7_DAYS -> 7
+            CashFlowTimeRange.LAST_6_MONTHS -> 6
+        }
+        val buckets = linkedMapOf<LocalDate, LongArray>()
+
+        repeat(count) { index ->
+            val date = if (monthly) {
+                start.plusMonths(index.toLong())
+            } else {
+                start.plusDays(index.toLong())
+            }
+            buckets[date] = longArrayOf(0L, 0L)
+        }
+
+        transactions.forEach { transaction ->
+            val date = Instant.ofEpochMilli(transaction.dateTimeMillis)
+                .atZone(zone)
+                .toLocalDate()
+
+            val key = if (monthly) date.withDayOfMonth(1) else date
+            val totals = buckets[key] ?: return@forEach
+
+            when (transaction.type) {
+                TransactionType.INCOME.name -> totals[0] += transaction.amountCents
+                TransactionType.EXPENSE.name -> totals[1] += transaction.amountCents
+            }
+        }
+
+        val formatter = DateTimeFormatter.ofPattern(
+            if (monthly) "MMM" else "d MMM",
+            Locale.getDefault()
+        )
+
+        SetData(buckets.map { (date, totals) ->
+            CashFlowPeriod(
+                label = date.format(formatter),
+                income = (totals[0] / 100.0).toFloat(),
+                expense = (totals[1] / 100.0).toFloat()
+            )
+        })
     }
 
     //Convert the financial data into chart entries and display them.
@@ -178,8 +270,8 @@ class CashFlowWidget(private val rootView: View) {
             incomeTotal += period.income
             expenseTotal += period.expense
 
-            val income = if(cumulative) incomeTotal else period.income
-            val expense = if(cumulative) expenseTotal else period.expense
+            val income = if (cumulative) incomeTotal else period.income
+            val expense = if (cumulative) expenseTotal else period.expense
             val x = index.toFloat()
 
             //Each bar contains two values: income is positive and expense is negative
@@ -216,16 +308,16 @@ class CashFlowWidget(private val rootView: View) {
 
         chart.xAxis.apply {
             //map the months to the corresponding index
-            valueFormatter = IndexAxisValueFormatter(periods.map {it.label})
+            valueFormatter = IndexAxisValueFormatter(periods.map { it.label })
             axisMinimum = -0.5f
             axisMaximum = periods.size - 0.5f
-            setLabelCount(periods.size, false)
+            setLabelCount(minOf(periods.size, 6), false)
         }
 
         //Adds more above the largest income and lower than minimum
         chart.axisLeft.apply {
-            axisMaximum= max(largestIncome * 1.5f, 1f)
-            axisMinimum= -max(largestExpense * 1.5f, 1f)
+            axisMaximum = max(largestIncome * 1.5f, 1f)
+            axisMinimum = -max(largestExpense * 1.5f, 1f)
         }
 
         //Combined data holds both kinds of chart data
@@ -240,5 +332,12 @@ class CashFlowWidget(private val rootView: View) {
         chart.notifyDataSetChanged()
         chart.invalidate()
     }
+
+    fun showMessage(message: String) {
+        chart.setNoDataText(message)
+        chart.clear()
+        chart.invalidate()
+    }
+
 
 }

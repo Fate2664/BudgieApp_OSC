@@ -15,4 +15,7 @@ interface BudgetDao {
 
     @Query("""SELECT * FROM budgets WHERE categoryId = :categoryId AND period = :period LIMIT 1""")
     suspend fun findForCategory(categoryId: String, period: String): BudgetEntity?
+
+    @Query("DELETE FROM budgets WHERE id = :id")
+    suspend fun deleteById(id: String)
 }

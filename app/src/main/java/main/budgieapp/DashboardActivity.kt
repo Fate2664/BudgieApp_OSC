@@ -2,6 +2,7 @@ package main.budgieapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -9,13 +10,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import main.budgieapp.data.BudgieDatabase
 import main.budgieapp.widgets.BudgetsWidget
 import main.budgieapp.widgets.CashFlowPeriod
+import main.budgieapp.widgets.CashFlowTimeRange
 import main.budgieapp.widgets.CashFlowWidget
+import main.budgieapp.widgets.ExpenseStructureWidget
 import main.budgieapp.widgets.GoalsWidget
 import main.budgieapp.widgets.IncomeVsExpensesWidget
+import java.time.ZoneId
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -26,6 +32,13 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var fabAddExpense: ExtendedFloatingActionButton
     private lateinit var fabAddIncome: ExtendedFloatingActionButton
     private var actionsOpen = false
+    private var cashFlowWidget: CashFlowWidget? = null
+    private var cashFlowRefreshJob: Job? = null
+    private var selectedCashFlowRange = CashFlowTimeRange.LAST_30_DAYS
+
+    private var expenseStructureWidget: ExpenseStructureWidget? = null
+    private var expenseStructureRefreshJob: Job? = null
+    private var selectedExpenseRange = CashFlowTimeRange.LAST_30_DAYS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,30 +123,39 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun setupAccountsPage(page: View) {
-        IncomeVsExpensesWidget.bindNavigation(page.findViewById(R.id.incomeVsExpensesWidget))
-
-        val cashFlowWidget = CashFlowWidget(page.findViewById(R.id.cashFlowWidget))
-
-        cashFlowWidget.SetData(
-            listOf(
-                CashFlowPeriod("Jan", 5000f, 3200f),
-                CashFlowPeriod("Feb", 5200f, 4100f),
-                CashFlowPeriod("Mar", 4800f, 5300f),
-                CashFlowPeriod("Apr", 6100f, 3900f),
-                CashFlowPeriod("May", 5500f, 4200f),
-                CashFlowPeriod("Jun", 6400f, 4600f),
-                CashFlowPeriod("Jul", 4500f, 4000f),
-                CashFlowPeriod("Aug", 5100f, 4400f),
-                CashFlowPeriod("Sep", 5600f, 4300f)
-            )
+        IncomeVsExpensesWidget.bindNavigation(
+            page.findViewById(R.id.incomeVsExpensesWidget)
         )
+
+        cashFlowWidget = CashFlowWidget(
+            page.findViewById(R.id.cashFlowWidget)
+        ).also { widget ->
+            widget.setupTimePeriodDropdown(selectedCashFlowRange) { range ->
+                selectedCashFlowRange = range
+                refreshCashFlow()
+            }
+        }
+
+        expenseStructureWidget = ExpenseStructureWidget(
+            page.findViewById(R.id.expenseStructureWidget)
+        ).also { widget ->
+            widget.setupTimePeriodDropdown(selectedExpenseRange) { range ->
+                selectedExpenseRange = range
+                refreshExpenseStructure()
+            }
+        }
     }
 
     private fun refreshAccountsPage() {
         val page = accountsPage ?: return
 
+        refreshCashFlow()
+        refreshExpenseStructure()
+
         lifecycleScope.launch {
-            IncomeVsExpensesWidget.refresh(page.findViewById(R.id.incomeVsExpensesWidget))
+            IncomeVsExpensesWidget.refresh(
+                page.findViewById(R.id.incomeVsExpensesWidget)
+            )
         }
     }
 
@@ -152,6 +174,83 @@ class DashboardActivity : AppCompatActivity() {
                 GoalsWidget.refresh(
                     page.findViewById<View>(R.id.goalsWidget)
                 )
+            }
+        }
+    }
+
+    private fun refreshCashFlow() {
+        val widget = cashFlowWidget ?: return
+        cashFlowRefreshJob?.cancel()
+
+        cashFlowRefreshJob = lifecycleScope.launch {
+            widget.showMessage("Loading cash flow...")
+
+
+            try {
+                val range = selectedCashFlowRange
+                val zone = ZoneId.systemDefault()
+                val nowMillis = System.currentTimeMillis()
+                val today = java.time.Instant.ofEpochMilli(nowMillis)
+                    .atZone(zone)
+                    .toLocalDate()
+                val startMillis = range.startDate(today)
+                    .atStartOfDay(zone)
+                    .toInstant()
+                    .toEpochMilli()
+                val transactions = BudgieDatabase
+                    .getInstance(applicationContext)
+                    .transactionDao()
+                    .getInRange(startMillis, nowMillis)
+
+                widget.setTransactions(
+                    transactions = transactions,
+                    range = range,
+                    today = today,
+                    zone = zone
+                )
+
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                Log.e("DashboardActivity", "Could not load cash flow", error)
+                widget.showMessage("Could not load cash flow")
+            }
+        }
+    }
+
+    private fun refreshExpenseStructure() {
+        val widget = expenseStructureWidget ?: return
+        expenseStructureRefreshJob?.cancel()
+
+        expenseStructureRefreshJob = lifecycleScope.launch {
+            widget.showMessage("Loading expenses...")
+            try {
+                val range = selectedExpenseRange
+                val zone = ZoneId.systemDefault()
+                val nowMillis = System.currentTimeMillis()
+                val today = java.time.Instant.ofEpochMilli(nowMillis)
+                    .atZone(zone)
+                    .toLocalDate()
+                val startMillis = range.startDate(today)
+                    .atStartOfDay(zone)
+                    .toInstant()
+                    .toEpochMilli()
+                val transactions = BudgieDatabase
+                    .getInstance(applicationContext)
+                    .transactionDao()
+                    .getInRange(startMillis, nowMillis)
+
+                widget.setTransactions(transactions)
+
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                Log.e(
+                    "DashboardActivity",
+                    "Could not load expense structure",
+                    error
+                )
+                widget.showMessage("Could not load expenses")
             }
         }
     }

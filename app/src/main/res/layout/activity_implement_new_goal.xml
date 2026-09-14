@@ -213,14 +213,13 @@
                         android:textColor="@color/soft_black"
                         android:textSize="16sp" />
 
-                    <ImageButton
+                    <ImageView
                         android:id="@+id/btnIcon"
                         android:layout_width="64dp"
                         android:layout_height="64dp"
-                        android:background="@android:color/transparent"
                         android:gravity="center_vertical"
                         app:tint="@color/white"
-                        android:src="@drawable/baseline_savings_24" />
+                        android:src="@drawable/holidayicon" />
 
                 </LinearLayout>
 

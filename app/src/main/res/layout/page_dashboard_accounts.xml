@@ -24,15 +24,6 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <include
-            android:id="@+id/balanceWidget"
-            layout="@layout/widget_balance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <include
             android:id="@+id/cashFlowWidget"
             layout="@layout/widget_cashflow_graph"
             android:layout_width="match_parent"

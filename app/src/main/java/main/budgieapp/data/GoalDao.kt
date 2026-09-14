@@ -14,4 +14,7 @@ interface GoalDao {
 
     @Query("SELECT * FROM goals ORDER BY targetDateMillis ASC")
     suspend fun getAll(): List<GoalEntity>
+
+    @Query("DELETE FROM goals WHERE id = :id")
+    suspend fun deleteById(id: String)
 }

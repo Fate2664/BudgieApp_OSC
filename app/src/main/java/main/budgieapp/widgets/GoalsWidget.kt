@@ -7,10 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import main.budgieapp.AddTransactionActivity
 import main.budgieapp.GoalIcons
 import main.budgieapp.R
@@ -105,8 +111,10 @@ object GoalsWidget {
                 }
 
                 row.findViewById<View>(R.id.btnAddMoney).setOnClickListener {
-                    val intent = Intent(root.context,
-                        AddTransactionActivity::class.java).apply {
+                    val intent = Intent(
+                        root.context,
+                        AddTransactionActivity::class.java
+                    ).apply {
                         putExtra(
                             AddTransactionActivity.EXTRA_TRANSACTION_TYPE,
                             TransactionType.EXPENSE.name
@@ -119,6 +127,59 @@ object GoalsWidget {
                     }
 
                     root.context.startActivity(intent)
+                }
+
+                row.findViewById<View>(R.id.btnOptions).apply {
+                    contentDescription = "Options for ${goal.name}"
+                    setOnClickListener { anchor ->
+                        val popup = PopupMenu(root.context, anchor)
+                        popup.menu.add("Delete goal").setOnMenuItemClickListener {
+                            MaterialAlertDialogBuilder(root.context)
+                                .setTitle("Delete goal?")
+                                .setMessage("Delete \"${goal.name}\"? This cannot be undone. " + "Existing transactions will be kept.")
+                                .setNegativeButton("Cancel", null)
+                                .setPositiveButton("Confirm") { _, _ ->
+                                    val lifecycleOwner = root.findViewTreeLifecycleOwner()
+
+                                    if (lifecycleOwner == null) {
+                                        Toast.makeText(
+                                            root.context, "Could not delete goal. Please try again",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        lifecycleOwner.lifecycleScope.launch {
+                                            anchor.isEnabled = false
+
+                                            try {
+                                                database.goalDao().deleteById(goal.id)
+                                                refresh(root)
+                                            } catch (cancelled: CancellationException) {
+                                                throw cancelled
+                                            } catch (error: Exception) {
+                                                Log.e(
+                                                    "GoalsWidget",
+                                                    "Could not delete goal",
+                                                    error
+                                                )
+
+                                                Toast.makeText(
+                                                    root.context,
+                                                    "Could not delete goal. Please try again.",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } finally {
+                                                anchor.isEnabled = true
+                                            }
+                                        }
+                                    }
+                                }
+                                .show()
+
+                            true
+                        }
+
+                        popup.show()
+                    }
                 }
 
                 container.addView(row)

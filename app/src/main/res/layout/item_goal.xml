@@ -112,5 +112,15 @@
         app:layout_constraintTop_toBottomOf="@id/goalProgress"
         app:layout_constraintEnd_toEndOf="@id/goalProgress"/>
 
+    <ImageButton
+        android:id="@+id/btnOptions"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/baseline_more_vert_24"
+        android:backgroundTint="@android:color/transparent"
+        app:tint="@color/soft_black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

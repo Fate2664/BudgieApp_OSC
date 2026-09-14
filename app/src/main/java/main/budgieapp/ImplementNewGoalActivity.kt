@@ -199,7 +199,7 @@ class ImplementNewGoalActivity : AppCompatActivity() {
     }
 
     private fun setupIconPicker() {
-        val button = findViewById<ImageButton>(R.id.btnIcon)
+        val button = findViewById<ImageView>(R.id.btnIcon)
 
         fun updateButton() {
             val option = iconOptions.firstOrNull() {
