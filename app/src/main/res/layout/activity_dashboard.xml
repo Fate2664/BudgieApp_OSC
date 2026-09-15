@@ -37,7 +37,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="#00FFFFFF"
-                app:srcCompat="@android:drawable/ic_menu_sort_by_size"
+                app:srcCompat="@drawable/baseline_menu_24"
                 app:tint="@color/white" />
 
             <TextView
@@ -58,7 +58,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="#00FFFFFF"
-                tools:src="@android:drawable/ic_popup_reminder" />
+                android:src="@drawable/baseline_notifications_24" />
 
             <ImageButton
                 android:id="@+id/btnAI"
@@ -67,7 +67,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="#00FFFFFF"
-                tools:src="@android:drawable/sym_action_chat" />
+                android:src="@drawable/baseline_settings_24" />
 
         </LinearLayout>
         <!-- endregion -->

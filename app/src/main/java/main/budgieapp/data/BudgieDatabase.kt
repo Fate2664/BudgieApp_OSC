@@ -9,8 +9,8 @@ import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.AndroidSQLiteDriver
 
 @Database(
-    entities = [TransactionEntity::class, BudgetEntity::class, GoalEntity::class],
-    version = 4,
+    entities = [TransactionEntity::class, BudgetEntity::class, GoalEntity::class, UserEntity::class],
+    version = 5,
     exportSchema = false
 )
 
@@ -18,6 +18,7 @@ abstract class BudgieDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
     abstract fun budgetDao(): BudgetDao
     abstract fun goalDao(): GoalDao
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile
@@ -44,8 +45,7 @@ abstract class BudgieDatabase : RoomDatabase() {
         }
 
         private val MIGRATION_2_3 = object : Migration(2, 3) {
-            override suspend fun migrate(connection: SQLiteConnection)
-            {
+            override suspend fun migrate(connection: SQLiteConnection) {
                 connection.prepare(
                     """
               CREATE TABLE IF NOT EXISTS goals (
@@ -58,7 +58,8 @@ abstract class BudgieDatabase : RoomDatabase() {
                   iconKey TEXT NOT NULL,
                   PRIMARY KEY(id)
               )
-              """.trimIndent()).use { it.step() }
+              """.trimIndent()
+                ).use { it.step() }
             }
         }
 
@@ -70,6 +71,30 @@ abstract class BudgieDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override suspend fun migrate(connection: SQLiteConnection) {
+                connection.prepare(
+                    """
+              CREATE TABLE IF NOT EXISTS users (
+                  id TEXT NOT NULL,
+                  email TEXT NOT NULL,
+                  passwordHash TEXT NOT NULL,
+                  passwordSalt TEXT NOT NULL,
+                  passwordIterations INTEGER NOT NULL,
+                  PRIMARY KEY(id)
+              )
+              """.trimIndent()
+                ).use { it.step() }
+
+                connection.prepare(
+                    """
+              CREATE UNIQUE INDEX IF NOT EXISTS index_users_email
+              ON users(email)
+              """.trimIndent()
+                ).use { it.step() }
+            }
+        }
+
         fun getInstance(context: Context): BudgieDatabase {
             return instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder<BudgieDatabase>(
@@ -77,7 +102,7 @@ abstract class BudgieDatabase : RoomDatabase() {
                     "budgie.db"
                 )
                     .setDriver(AndroidSQLiteDriver())
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build()
                     .also { instance = it }
             }

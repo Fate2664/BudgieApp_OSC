@@ -17,42 +17,36 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import main.budgieapp.data.BudgieDatabase
 import main.budgieapp.data.PasswordHasher
-import main.budgieapp.data.UserEntity
 import java.util.Locale
-import java.util.UUID
 
-class CreateAccountActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
     private val database by lazy {
         BudgieDatabase.getInstance(applicationContext)
     }
 
-    private var isSaving = false
+    private var isLoggedIn = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_create_account)
+        setContentView(R.layout.activity_login)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        findViewById<MaterialButton>(R.id.btnCreateAccount).setOnClickListener {
-            createAccount()
-        }
-
         findViewById<MaterialButton>(R.id.btnLogin).setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
+            login()
         }
     }
 
-    private fun createAccount() {
-        if (isSaving) return
+    private fun login() {
+        if (isLoggedIn) return
 
         val emailInput = findViewById<EditText>(R.id.etxtEmail)
         val passwordInput = findViewById<EditText>(R.id.etxtPassword)
-        val createButton = findViewById<MaterialButton>(R.id.btnCreateAccount)
+        val loginButton = findViewById<MaterialButton>(R.id.btnLogin)
         val email = emailInput.text.toString().trim().lowercase(Locale.ROOT)
 
         emailInput.error = null
@@ -64,8 +58,8 @@ class CreateAccountActivity : AppCompatActivity() {
             return
         }
 
-        if (passwordInput.text.length < 6) {
-            passwordInput.error = "Password requires at least 6 characters"
+        if (passwordInput.text.isEmpty()) {
+            passwordInput.error = "Enter your password"
             passwordInput.requestFocus()
             return
         }
@@ -73,59 +67,51 @@ class CreateAccountActivity : AppCompatActivity() {
         val passwordText = passwordInput.text
         val password = CharArray(passwordText.length) { index -> passwordText[index] }
 
-        isSaving = true
-        createButton.isEnabled = false
+        isLoggedIn = true
+        loginButton.isEnabled = false
         emailInput.isEnabled = false
         passwordInput.isEnabled = false
 
         lifecycleScope.launch {
             try {
-                val credentials = withContext(Dispatchers.Default) {
+                val user = database.userDao().findByEmail(email)
+                val passwordMatches = withContext(Dispatchers.Default) {
                     try {
-                        PasswordHasher.hash(password)
+                        if (user == null) {
+                            PasswordHasher.hash(password)
+                            false
+                        } else {
+                            PasswordHasher.verify(password, user)
+                        }
                     } finally {
                         password.fill('\u0000')
                     }
                 }
 
-                val user = UserEntity(
-                    id = UUID.randomUUID().toString(),
-                    email = email,
-                    passwordHash = credentials.hash,
-                    passwordSalt = credentials.salt,
-                    passwordIterations = credentials.iterations
-                )
-
-                val insertedRow = database.userDao().insert(user)
-
-                if (insertedRow == -1L) {
-                    emailInput.error = "An account with this email already exists"
+                if (user == null || !passwordMatches) {
+                    passwordInput.error = "Incorrect email or password"
                     return@launch
                 }
                 passwordInput.text.clear()
-                Toast.makeText(this@CreateAccountActivity, "Account created", Toast.LENGTH_SHORT)
+
+                Toast.makeText(this@LoginActivity, "Logged in successfully", Toast.LENGTH_SHORT)
                     .show()
-                startActivity(
-                    Intent(
-                        this@CreateAccountActivity,
-                        DashboardActivity::class.java
-                    ).apply {
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    }
-                )
+                startActivity(Intent(this@LoginActivity, DashboardActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
                 finish()
-            } catch (exception: CancellationException) {
-                throw exception
+            } catch (cancelled: CancellationException) {
+                throw cancelled
             } catch (exception: Exception) {
                 Toast.makeText(
-                    this@CreateAccountActivity,
-                    "Could not create account. Please try again.",
-                    Toast.LENGTH_LONG
+                    this@LoginActivity,
+                    "Could not log in. Please try again.",
+                    Toast.LENGTH_SHORT
                 ).show()
             } finally {
                 password.fill('\u0000')
-                isSaving = false
-                createButton.isEnabled = true
+                isLoggedIn = false
+                loginButton.isEnabled = true
                 emailInput.isEnabled = true
                 passwordInput.isEnabled = true
             }
