@@ -24,7 +24,7 @@
         <activity
             android:name=".DashboardActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".AddTransactionActivity"
             android:exported="false"
@@ -51,6 +51,10 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".SettingsMenuActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
     </application>

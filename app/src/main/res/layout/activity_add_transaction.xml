@@ -89,6 +89,7 @@
                 android:id="@+id/etxtAmount"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:inputType="numberDecimal"
                 android:backgroundTint="@color/black"
                 android:hint="R0"
                 android:paddingStart="0dp"
