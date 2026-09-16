@@ -30,4 +30,10 @@ interface TransactionDao {
         endMillis: Long
     ): List<TransactionEntity>
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertSample(transaction: List<TransactionEntity>)
+
+    @Query("DELETE FROM transactions")
+    suspend fun deleteAll(): Int
+
 }

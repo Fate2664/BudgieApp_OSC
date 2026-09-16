@@ -22,6 +22,7 @@ import main.budgieapp.widgets.ExpenseStructureWidget
 import main.budgieapp.widgets.GoalsWidget
 import main.budgieapp.widgets.IncomeVsExpensesWidget
 import java.time.ZoneId
+import androidx.core.content.edit
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -49,6 +50,10 @@ class DashboardActivity : AppCompatActivity() {
         fabAddExpense = findViewById(R.id.fabAddExpense)
         fabAddIncome = findViewById(R.id.fabAddIncome)
 
+        findViewById<View>(R.id.btnSettings).setOnClickListener {
+            startActivity(Intent(this, SettingsMenuActivity::class.java))
+        }
+
         fabDashboardActions.setOnClickListener {
             if (actionsOpen) {
                 closeActionMenu()
@@ -65,7 +70,10 @@ class DashboardActivity : AppCompatActivity() {
             openTransaction(TransactionType.INCOME)
         }
 
-        setupDashboardPager()
+        lifecycleScope.launch {
+            loadSampleTransactionsOnce()
+            setupDashboardPager()
+        }
 
     }
 
@@ -73,6 +81,29 @@ class DashboardActivity : AppCompatActivity() {
         super.onStart()
         refreshAccountsPage()
         refreshBudgetsPage()
+    }
+
+    private suspend fun loadSampleTransactionsOnce() {
+        val preferences = getSharedPreferences("sample_data", MODE_PRIVATE)
+
+        if (preferences.getBoolean("initial_samples_loaded", false)) {
+            return
+        }
+
+        try {
+            BudgieDatabase.getInstance(applicationContext)
+                .transactionDao()
+                .insertSample(SampleTransactions.create(applicationContext)
+                )
+
+            preferences.edit {
+                putBoolean("initial_samples_loaded", true)
+            }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (error: Exception) {
+            Log.e("DashboardActivity", "Could not load sample transactions", error)
+        }
     }
 
     private fun setupDashboardPager() {
