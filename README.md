@@ -11,8 +11,11 @@ Feature list:
   + Income And Expense Tracking
   + Cashflow Graph
   + Expenses Pie Chart
+  + Income Recording
+  + Expense Recording
 
   Budgets and Goals Page:
   +  Budget adding
   +  Goal adding
+  +  Adding money to goals
   
