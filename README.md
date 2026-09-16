@@ -19,3 +19,5 @@ Feature list:
   +  Goal adding
   +  Adding money to goals
   
+Explanation video:
+https://drive.google.com/file/d/10PIu-6CD3GfAQUhfwe8vgGxFHPzA1NLo/view?usp=sharing
