@@ -22,18 +22,18 @@ import java.util.Locale
 
 class LoginActivity : AppCompatActivity() {
 
-    private val auth : FirebaseAuth by lazy{
+    private val auth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
 
-    private var isLoggedIn = false
+    private var isLoggingIn = false
 
-    override fun onStart(){
+    override fun onStart() {
         super.onStart()
 
         val currentUser = auth.currentUser
         if (currentUser != null)
-            reload()
+            openDashboard()
 
     }
 
@@ -52,20 +52,48 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun login(email: String, password: String){
+    private fun login() {
+        if (isLoggingIn) return
+
+        val emailInput = findViewById<EditText>(R.id.etxtEmail)
+        val passwordInput = findViewById<EditText>(R.id.etxtPassword)
+        val loginButton = findViewById<MaterialButton>(R.id.btnLogin)
+
+        val email = emailInput.text.toString().trim().lowercase(Locale.ROOT)
+        val password = passwordInput.text.toString()
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailInput.error = "Enter a valid email address"
+            emailInput.requestFocus()
+            return
+        }
+
+        if (password.isEmpty()) {
+            passwordInput.error = "Enter your password"
+            passwordInput.requestFocus()
+            return
+        }
+
+        isLoggingIn = true
+        loginButton.isEnabled = false
+        emailInput.isEnabled = false
+        passwordInput.isEnabled = false
+
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful)
-                {
-                    val user = auth.currentUser
+                if (isFinishing || isDestroyed)
+                    return@addOnCompleteListener
+                isLoggingIn = false
+                loginButton.isEnabled = true
+                emailInput.isEnabled = true
+                passwordInput.isEnabled = true
+
+                if (task.isSuccessful) {
+                    passwordInput.text.clear()
                     Toast.makeText(this@LoginActivity, "Logged in successfully", Toast.LENGTH_SHORT)
                         .show()
-                    startActivity(Intent(this@LoginActivity, DashboardActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    })
-                    finish()
-                }
-                else{
+                    openDashboard()
+                } else {
                     Toast.makeText(
                         this@LoginActivity,
                         "Could not log in. Please try again.",
@@ -75,80 +103,11 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun login() {
-        if (isLoggedIn) return
-
-        val emailInput = findViewById<EditText>(R.id.etxtEmail)
-        val passwordInput = findViewById<EditText>(R.id.etxtPassword)
-        val loginButton = findViewById<MaterialButton>(R.id.btnLogin)
-        val email = emailInput.text.toString().trim().lowercase(Locale.ROOT)
-
-        emailInput.error = null
-        passwordInput.error = null
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailInput.error = "Enter a valid email address"
-            emailInput.requestFocus()
-            return
-        }
-
-        if (passwordInput.text.isEmpty()) {
-            passwordInput.error = "Enter your password"
-            passwordInput.requestFocus()
-            return
-        }
-
-        val passwordText = passwordInput.text
-        val password = CharArray(passwordText.length) { index -> passwordText[index] }
-
-        isLoggedIn = true
-        loginButton.isEnabled = false
-        emailInput.isEnabled = false
-        passwordInput.isEnabled = false
-
-        lifecycleScope.launch {
-            try {
-                val user = database.userDao().findByEmail(email)
-                val passwordMatches = withContext(Dispatchers.Default) {
-                    try {
-                        if (user == null) {
-                            PasswordHasher.hash(password)
-                            false
-                        } else {
-                            PasswordHasher.verify(password, user)
-                        }
-                    } finally {
-                        password.fill('\u0000')
-                    }
-                }
-
-                if (user == null || !passwordMatches) {
-                    passwordInput.error = "Incorrect email or password"
-                    return@launch
-                }
-                passwordInput.text.clear()
-
-                Toast.makeText(this@LoginActivity, "Logged in successfully", Toast.LENGTH_SHORT)
-                    .show()
-                startActivity(Intent(this@LoginActivity, DashboardActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                })
-                finish()
-            } catch (cancelled: CancellationException) {
-                throw cancelled
-            } catch (exception: Exception) {
-                Toast.makeText(
-                    this@LoginActivity,
-                    "Could not log in. Please try again.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } finally {
-                password.fill('\u0000')
-                isLoggedIn = false
-                loginButton.isEnabled = true
-                emailInput.isEnabled = true
-                passwordInput.isEnabled = true
-            }
-        }
+    private fun openDashboard(){
+        startActivity(Intent(this, DashboardActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
+        finish()
     }
+
 }
