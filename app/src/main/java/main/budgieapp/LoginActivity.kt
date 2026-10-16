@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,11 +21,21 @@ import main.budgieapp.data.PasswordHasher
 import java.util.Locale
 
 class LoginActivity : AppCompatActivity() {
-    private val database by lazy {
-        BudgieDatabase.getInstance(applicationContext)
+
+    private val auth : FirebaseAuth by lazy{
+        FirebaseAuth.getInstance()
     }
 
     private var isLoggedIn = false
+
+    override fun onStart(){
+        super.onStart()
+
+        val currentUser = auth.currentUser
+        if (currentUser != null)
+            reload()
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +50,29 @@ class LoginActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnLogin).setOnClickListener {
             login()
         }
+    }
+
+    private fun login(email: String, password: String){
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful)
+                {
+                    val user = auth.currentUser
+                    Toast.makeText(this@LoginActivity, "Logged in successfully", Toast.LENGTH_SHORT)
+                        .show()
+                    startActivity(Intent(this@LoginActivity, DashboardActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    })
+                    finish()
+                }
+                else{
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Could not log in. Please try again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
     }
 
     private fun login() {

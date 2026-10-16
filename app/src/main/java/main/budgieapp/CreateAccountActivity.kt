@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,8 +23,9 @@ import java.util.Locale
 import java.util.UUID
 
 class CreateAccountActivity : AppCompatActivity() {
-    private val database by lazy {
-        BudgieDatabase.getInstance(applicationContext)
+
+    private val auth : FirebaseAuth by lazy {
+        FirebaseAuth.getInstance()
     }
 
     private var isSaving = false
@@ -45,6 +47,32 @@ class CreateAccountActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnLogin).setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
+    }
+
+    private fun createAccount(email: String, password: String){
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful){
+                    val user = auth.currentUser
+                    Toast.makeText(this@CreateAccountActivity, "Account created", Toast.LENGTH_SHORT)
+                        .show()
+                    startActivity(
+                        Intent(
+                            this@CreateAccountActivity,
+                            DashboardActivity::class.java
+                        ).apply {
+                            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        }
+                    )
+                    finish()
+                } else {
+                    Toast.makeText(
+                        this@CreateAccountActivity,
+                        "Could not create account. Please try again.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
     }
 
     private fun createAccount() {

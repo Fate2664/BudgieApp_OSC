@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -20,7 +21,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    buildFeatures { viewBinding = true }
     buildTypes {
         release {
             optimization {
@@ -48,5 +49,9 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation("androidx.viewpager2:viewpager2:1.1.0")
+    implementation(platform("com.google.firebase:firebase-bom:35.0.1"))
+    implementation ("com.google.firebase:firebase-auth")
+    implementation ("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-analytics")
 
 }

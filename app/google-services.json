@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "460910180566",
+    "project_id": "budgieapp",
+    "storage_bucket": "budgieapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:460910180566:android:6d4e5cb60d5bd6fe15f177",
+        "android_client_info": {
+          "package_name": "main.budgieapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUiGRs2mfADFaZ6cZ-pPUAeabo2Xfw4wc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

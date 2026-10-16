@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="main.budgieapp" />
+                  <option name="mobileSdkAppId" value="1:460910180566:android:6d4e5cb60d5bd6fe15f177" />
+                  <option name="projectId" value="budgieapp" />
+                  <option name="projectNumber" value="460910180566" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
