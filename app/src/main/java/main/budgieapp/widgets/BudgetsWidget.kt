@@ -2,7 +2,6 @@ package main.budgieapp.widgets
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +10,6 @@ import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -22,17 +17,16 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import main.budgieapp.Category
 import main.budgieapp.R
-import main.budgieapp.data.BudgieDatabase
+import main.budgieapp.data.BudgetRepo
+import main.budgieapp.data.TransactionRepo
 import org.json.JSONArray
 import org.json.JSONException
-import org.w3c.dom.Text
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.temporal.TemporalAdjuster
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
@@ -126,9 +120,10 @@ object BudgetsWidget {
         summaryBar.progress = 0
 
         try {
-            val database = BudgieDatabase.getInstance(root.context)
-            val budgets = database.budgetDao().getAll().filter { it.period == selectedPeriod }
-            val expenses = database.transactionDao().getByType("EXPENSE")
+            val transactionRepo = TransactionRepo.forCurrentUser()
+            val budgetRepo = BudgetRepo.forCurrentUser()
+            val budgets = budgetRepo.getAll().filter { it.period == selectedPeriod }
+            val expenses = transactionRepo.getByType("EXPENSE")
             val categoriesById = loadCategoriesById(root.context)
             val zone = ZoneId.systemDefault()
             val now = System.currentTimeMillis()
@@ -212,8 +207,8 @@ object BudgetsWidget {
                                             anchor.isEnabled = false
 
                                             try {
-                                                database.goalDao().deleteById(budget.id)
-                                                GoalsWidget.refresh(root)
+                                                budgetRepo.deleteById(budget.id)
+                                                refresh(root)
                                             } catch (cancelled: CancellationException) {
                                                 throw cancelled
                                             } catch (error: Exception) {

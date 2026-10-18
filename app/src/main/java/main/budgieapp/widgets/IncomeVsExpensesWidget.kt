@@ -14,7 +14,7 @@ import kotlinx.coroutines.CancellationException
 import main.budgieapp.R
 import main.budgieapp.TransactionType
 import main.budgieapp.TransactionsListActivity
-import main.budgieapp.data.BudgieDatabase
+import main.budgieapp.data.TransactionRepo
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
@@ -58,15 +58,11 @@ class IncomeVsExpensesWidget : AppCompatActivity() {
             val expenseBar = root.findViewById<ProgressBar>(R.id.expensesProgress)
 
             try{
-                val transactions = BudgieDatabase
-                    .getInstance(root.context)
-                    .transactionDao()
-                    .getAll()
-
+                val transactionRepo = TransactionRepo.forCurrentUser().getAll()
                 var income = BigDecimal.ZERO
                 var expense = BigDecimal.ZERO
 
-                for(transaction in transactions){
+                for(transaction in transactionRepo){
                     val amount = BigDecimal.valueOf(transaction.amountCents, 2)
                     when (transaction.type){
                         TransactionType.INCOME.name -> income = income.add(amount)

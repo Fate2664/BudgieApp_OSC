@@ -13,16 +13,15 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import main.budgieapp.data.BudgieDatabase
 import main.budgieapp.widgets.BudgetsWidget
-import main.budgieapp.widgets.CashFlowPeriod
 import main.budgieapp.widgets.CashFlowTimeRange
 import main.budgieapp.widgets.CashFlowWidget
 import main.budgieapp.widgets.ExpenseStructureWidget
 import main.budgieapp.widgets.GoalsWidget
 import main.budgieapp.widgets.IncomeVsExpensesWidget
 import java.time.ZoneId
-import androidx.core.content.edit
+import main.budgieapp.data.TransactionEntity
+import main.budgieapp.data.TransactionRepo
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -40,6 +39,10 @@ class DashboardActivity : AppCompatActivity() {
     private var expenseStructureWidget: ExpenseStructureWidget? = null
     private var expenseStructureRefreshJob: Job? = null
     private var selectedExpenseRange = CashFlowTimeRange.LAST_30_DAYS
+
+    private val transactionRepo by lazy {
+        TransactionRepo.forCurrentUser()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,10 +73,7 @@ class DashboardActivity : AppCompatActivity() {
             openTransaction(TransactionType.INCOME)
         }
 
-        lifecycleScope.launch {
-            loadSampleTransactionsOnce()
-            setupDashboardPager()
-        }
+        setupDashboardPager()
 
     }
 
@@ -81,29 +81,6 @@ class DashboardActivity : AppCompatActivity() {
         super.onStart()
         refreshAccountsPage()
         refreshBudgetsPage()
-    }
-
-    private suspend fun loadSampleTransactionsOnce() {
-        val preferences = getSharedPreferences("sample_data", MODE_PRIVATE)
-
-        if (preferences.getBoolean("initial_samples_loaded", false)) {
-            return
-        }
-
-        try {
-            BudgieDatabase.getInstance(applicationContext)
-                .transactionDao()
-                .insertSample(SampleTransactions.create(applicationContext)
-                )
-
-            preferences.edit {
-                putBoolean("initial_samples_loaded", true)
-            }
-        } catch (cancelled: CancellationException) {
-            throw cancelled
-        } catch (error: Exception) {
-            Log.e("DashboardActivity", "Could not load sample transactions", error)
-        }
     }
 
     private fun setupDashboardPager() {
@@ -228,13 +205,11 @@ class DashboardActivity : AppCompatActivity() {
                     .atStartOfDay(zone)
                     .toInstant()
                     .toEpochMilli()
-                val transactions = BudgieDatabase
-                    .getInstance(applicationContext)
-                    .transactionDao()
-                    .getInRange(startMillis, nowMillis)
+                val transactionRepo =
+                    TransactionRepo.forCurrentUser().getInRange(startMillis, nowMillis)
 
                 widget.setTransactions(
-                    transactions = transactions,
+                    transactions = transactionRepo,
                     range = range,
                     today = today,
                     zone = zone
@@ -266,10 +241,7 @@ class DashboardActivity : AppCompatActivity() {
                     .atStartOfDay(zone)
                     .toInstant()
                     .toEpochMilli()
-                val transactions = BudgieDatabase
-                    .getInstance(applicationContext)
-                    .transactionDao()
-                    .getInRange(startMillis, nowMillis)
+                val transactions = transactionRepo.getInRange(startMillis, nowMillis)
 
                 widget.setTransactions(transactions)
 

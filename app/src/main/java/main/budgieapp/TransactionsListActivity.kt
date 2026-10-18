@@ -9,19 +9,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import main.budgieapp.data.BudgieDatabase
 import main.budgieapp.data.TransactionAdapter
-import org.w3c.dom.Text
+import main.budgieapp.data.TransactionRepo
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.time.LocalDate
@@ -35,6 +32,9 @@ class TransactionsListActivity : AppCompatActivity() {
         const val EXTRA_TRANSACTION_TYPE = "transaction_type"
     }
 
+    private val transactionRepo by lazy{
+        TransactionRepo.forCurrentUser()
+    }
     private lateinit var transactionType: TransactionType
     private lateinit var recycler: RecyclerView
     private lateinit var message: TextView
@@ -125,9 +125,7 @@ class TransactionsListActivity : AppCompatActivity() {
 
         loadJob = lifecycleScope.launch {
             try {
-                val transactions = BudgieDatabase
-                    .getInstance(applicationContext)
-                    .transactionDao()
+                val transactions = TransactionRepo.forCurrentUser()
                     .getByType(transactionType.name)
                     .filter { transaction ->
                         val timestamp = transaction.dateTimeMillis

@@ -10,14 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import main.budgieapp.data.BudgieDatabase
+import main.budgieapp.data.TransactionRepo
 
 class SettingsMenuActivity : AppCompatActivity() {
-    private val database by lazy {
-        BudgieDatabase.getInstance(applicationContext)
+    private val transactionRepo by lazy {
+        TransactionRepo.forCurrentUser()
     }
 
     private lateinit var clearButton: View
@@ -62,7 +62,7 @@ class SettingsMenuActivity : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Load") { _, _ ->
                 runDataAction {
-                    database.transactionDao().insertSample(
+                    transactionRepo.insertSample(
                         SampleTransactions.create(applicationContext)
                     )
                     "Sample transactions are available"
@@ -83,7 +83,7 @@ class SettingsMenuActivity : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Clear all") { _, _ ->
                 runDataAction {
-                    val deleted = database.transactionDao().deleteAll()
+                    val deleted = transactionRepo.deleteAll()
                     if (deleted == 0) {
                         "No transaction to clear"
                     } else {
@@ -104,7 +104,7 @@ class SettingsMenuActivity : AppCompatActivity() {
             try {
                 val message = action()
                 Toast.makeText(this@SettingsMenuActivity, message, Toast.LENGTH_SHORT).show()
-            } catch (cancelled: Exception) {
+            } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
                 Log.e("SettingsMenuActivity", "Data action failed", error)

@@ -2,43 +2,27 @@ package main.budgieapp
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.icu.util.Calendar
 import android.net.Uri
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.provider.OpenableColumns
 import android.text.format.DateFormat
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.ListView
 import android.widget.PopupMenu
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import main.budgieapp.data.BudgieDatabase
+import main.budgieapp.data.GoalNotFoundException
 import main.budgieapp.data.TransactionEntity
-import org.json.JSONArray
-import org.json.JSONObject
-import org.w3c.dom.Text
+import main.budgieapp.data.TransactionRepo
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -57,8 +41,8 @@ data class Category(
 
 class AddTransactionActivity : AppCompatActivity() {
 
-    private val database by lazy {
-        BudgieDatabase.getInstance(applicationContext)
+    private val transactionRepo by lazy{
+        TransactionRepo.forCurrentUser()
     }
 
     private var isSaving = false
@@ -348,24 +332,18 @@ class AddTransactionActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val goalId = transaction.goalId
-
-                if (goalId != null && database.goalDao().findById(goalId) ==
-                    null) {
-                    Toast.makeText(
-                        this@AddTransactionActivity,
-                        "This goal no longer exists",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@launch
-                }
-
-                database.transactionDao().insertIfAbsent(transaction)
+                transactionRepo.insertIfAbsent(transaction)
                 Toast.makeText(this@AddTransactionActivity, "Transaction saved", Toast.LENGTH_SHORT)
                     .show()
                 finish()
             } catch (exception: CancellationException) {
                 throw exception
+            } catch (exception: GoalNotFoundException) {
+                Toast.makeText(
+                    this@AddTransactionActivity,
+                    "This goal no longer exists",
+                    Toast.LENGTH_LONG
+                ).show()
             } catch (exception: Exception) {
                 Toast.makeText(
                     this@AddTransactionActivity,

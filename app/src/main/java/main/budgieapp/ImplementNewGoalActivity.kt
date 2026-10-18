@@ -1,9 +1,5 @@
 package main.budgieapp
 
-import android.R.attr.horizontalSpacing
-import android.R.attr.numColumns
-import android.R.attr.shape
-import android.R.attr.stretchMode
 import android.app.DatePickerDialog
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -29,8 +25,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import main.budgieapp.data.BudgieDatabase
 import main.budgieapp.data.GoalEntity
+import main.budgieapp.data.GoalRepo
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -45,8 +41,8 @@ class ImplementNewGoalActivity : AppCompatActivity() {
         const val EXTRA_GOAL_COLOR = "extra_goal_color"
     }
 
-    private val database by lazy {
-        BudgieDatabase.getInstance(applicationContext)
+    private val goalRepo by lazy {
+        GoalRepo.forCurrentUser()
     }
 
     private var goalId = UUID.randomUUID().toString()
@@ -369,10 +365,7 @@ class ImplementNewGoalActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                if (database.goalDao().findById(goalId) == null) {
-                    database.goalDao().insert(goal)
-                }
-
+                goalRepo.insertIfAbsent(goal)
                 Toast.makeText(
                     this@ImplementNewGoalActivity,
                     "Goal saved",

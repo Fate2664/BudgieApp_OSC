@@ -1,6 +1,5 @@
 package main.budgieapp
 
-import android.media.Image
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageButton
@@ -9,27 +8,22 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import main.budgieapp.data.BudgetEntity
-import main.budgieapp.data.BudgieDatabase
-import java.util.UUID
+import main.budgieapp.data.BudgetRepo
 
 
 class AddBudgetActivity : AppCompatActivity() {
     private lateinit var categoryPicker: CategoryPickerHelper
     private var selectedCategory: Category? = null
 
-    private val database by lazy {
-        BudgieDatabase.getInstance(applicationContext)
+    private val budgetRepo by lazy {
+        BudgetRepo.forCurrentUser()
     }
-
     private var isSaving = false
-    private var budgetId = UUID.randomUUID().toString()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +58,6 @@ class AddBudgetActivity : AppCompatActivity() {
         //endregion
 
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
-
-        budgetId = savedInstanceState?.getString("budget_id") ?: budgetId
 
         savedInstanceState?.getString("budget_period")?.let {
             findViewById<TextView>(R.id.txtPeriod).text = it
@@ -123,7 +115,6 @@ class AddBudgetActivity : AppCompatActivity() {
         }
 
         val budget = BudgetEntity(
-            id = budgetId,
             name = name,
             amountCents = amountCents,
             categoryId = category.id,
@@ -136,10 +127,9 @@ class AddBudgetActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val existing = database.budgetDao()
-                    .findForCategory(category.id, period)
+                val created = budgetRepo.insert(budget)
 
-                if (existing != null && existing.id != budgetId) {
+                if (!created) {
                     Toast.makeText(
                         this@AddBudgetActivity,
                         "This category already has a $period budget",
@@ -147,11 +137,6 @@ class AddBudgetActivity : AppCompatActivity() {
                     ).show()
                     return@launch
                 }
-
-                if (existing == null) {
-                    database.budgetDao().insert(budget)
-                }
-
                 Toast.makeText(this@AddBudgetActivity, "Budget saved", Toast.LENGTH_SHORT).show()
                 finish()
             } catch (cancelled: CancellationException) {
@@ -171,7 +156,6 @@ class AddBudgetActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString("budget_id", budgetId)
         outState.putString("selected_category_id", selectedCategory?.id)
         outState.putString("budget_period", findViewById<TextView>(R.id.txtPeriod).text.toString())
 

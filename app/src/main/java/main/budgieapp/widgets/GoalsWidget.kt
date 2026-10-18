@@ -21,10 +21,10 @@ import main.budgieapp.AddTransactionActivity
 import main.budgieapp.GoalIcons
 import main.budgieapp.R
 import main.budgieapp.TransactionType
-import main.budgieapp.data.BudgieDatabase
+import main.budgieapp.data.GoalRepo
+import main.budgieapp.data.TransactionRepo
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -46,11 +46,11 @@ object GoalsWidget {
         showMessage("Loading goals...")
 
         try {
-            val database = BudgieDatabase.getInstance(root.context)
-            val goals = database.goalDao().getAll()
+            val transactionRepo = TransactionRepo.forCurrentUser()
+            val goalRepo = GoalRepo.forCurrentUser()
+            val goals = goalRepo.getAll()
 
-            val contributionsByGoal = database.transactionDao()
-                .getByType("EXPENSE")
+            val contributionsByGoal = transactionRepo.getByType("EXPENSE")
                 .filter { it.goalId != null && it.status == "Cleared" }
                 .groupBy { it.goalId }
                 .mapValues { (_, transactions) ->
@@ -151,7 +151,7 @@ object GoalsWidget {
                                             anchor.isEnabled = false
 
                                             try {
-                                                database.goalDao().deleteById(goal.id)
+                                                goalRepo.deleteById(goal.id)
                                                 refresh(root)
                                             } catch (cancelled: CancellationException) {
                                                 throw cancelled
