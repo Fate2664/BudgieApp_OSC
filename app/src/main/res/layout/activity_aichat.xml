@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_blue"
+    tools:context=".AIChatActivity">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="12dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp"
+        app:strokeColor="#EEEEEE"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/txtChatWithAITitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:accessibilityHeading="true"
+                android:text="@string/ai_chat_title"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtTip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/ai_chat_subtitle"
+                android:textColor="@color/soft_black"
+                android:textSize="16sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMessages"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:paddingTop="24dp"
+                android:paddingBottom="12dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:stackFromEnd="true"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_chat_message_ai" />
+
+            <TextView
+                android:id="@+id/txtChatStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:accessibilityLiveRegion="polite"
+                android:paddingBottom="8dp"
+                android:text="@string/ai_chat_thinking"
+                android:textColor="@color/soft_black"
+                android:visibility="gone" />
+
+            <!-- region Preset Questions -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnMonthlySummary"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:minHeight="48dp"
+                        android:text="@string/ai_chat_monthly_summary"
+                        android:textAllCaps="false"
+                        android:textColor="#0076BE"
+                        app:cornerRadius="24dp"
+                        app:icon="@drawable/baseline_currency_exchange_24"
+                        app:iconTint="@color/background_header"
+                        app:strokeColor="@color/background_header" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSavingsPlan"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:minHeight="48dp"
+                        android:text="@string/ai_chat_savings_plan"
+                        android:textAllCaps="false"
+                        android:textColor="#0076BE"
+                        app:cornerRadius="24dp"
+                        app:icon="@drawable/baseline_savings_24"
+                        app:iconTint="@color/background_header"
+                        app:strokeColor="@color/background_header" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnBudgetTips"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:minHeight="48dp"
+                        android:text="@string/ai_chat_budget_tips"
+                        android:textAllCaps="false"
+                        android:textColor="#0076BE"
+                        app:cornerRadius="24dp"
+                        app:strokeColor="@color/background_header" />
+                </LinearLayout>
+            </HorizontalScrollView>
+            <!-- endregion -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_chat_composer"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnAttach"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/ai_chat_attach"
+                        android:enabled="false"
+                        app:srcCompat="@drawable/ic_chat_attach"
+                        app:tint="#777777" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/etMessage"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="@string/ai_chat_hint"
+                        android:inputType="textCapSentences|textMultiLine"
+                        android:maxLines="4"
+                        android:minHeight="48dp"
+                        android:padding="10dp"
+                        android:textColor="@color/soft_black"
+                        android:textColorHint="#767676"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSend"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@string/ai_chat_send"
+                    android:enabled="false"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:backgroundTint="@color/background_header"
+                    app:cornerRadius="26dp"
+                    app:icon="@drawable/ic_chat_send"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="26dp"
+                    app:iconTint="@color/white" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

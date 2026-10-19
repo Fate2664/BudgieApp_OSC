@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string
+    name="ai_chat_title">Chat with AI</string>
+  <string
+    name="ai_chat_subtitle">Get insights based on your real data</string>
+  <string
+    name="ai_chat_monthly_summary">Monthly summary</string>
+  <string
+    name="ai_chat_savings_plan">Savings plan</string>
+  <string
+    name="ai_chat_budget_tips">Budget tips</string>
+  <string
+    name="ai_chat_hint">Ask a question about your money…</string>
+  <string
+    name="ai_chat_send">Send message</string>
+  <string
+    name="ai_chat_attach">Attach a file</string>
+  <string
+    name="ai_chat_thinking">AI is thinking…</string>
+  <string
+    name="ai_chat_avatar">AI</string>
+</resources>
