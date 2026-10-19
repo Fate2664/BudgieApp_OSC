@@ -1,5 +1,3 @@
 package main.budgieapp.models
 
-class AIRequest(val message: String) {
-
-}
+data class AIRequest(val message: String)
