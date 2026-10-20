@@ -11,7 +11,7 @@
 ![Language](https://img.shields.io/badge/language-Kotlin-7F52FF?logo=kotlin&logoColor=white)
 ![Backend](https://img.shields.io/badge/backend-Firebase-FFCA28?logo=firebase&logoColor=black)
 <!-- TODO: replace OWNER/REPO with your repo path so the build badge works -->
-![Build](https://github.com/Fate2664/BudgieApp_OSC/actions/workflows/bluild.yml/badge.svg)
+![Build](https://github.com/Fate2664/BudgieApp_OSC/actions/workflows/build.yml/badge.svg)
 
 </div>
 
@@ -145,7 +145,7 @@ GitHub Actions automates checks every time code is pushed, so problems are caugh
 
 <!-- TODO: paste your real workflow file path and explain it -->
 
-**Workflow file:** `.github/workflows/TODO.yml`
+**Workflow file:** `.github/workflows/bluild.yml`
 
 | Step | What it does |
 |---|---|
