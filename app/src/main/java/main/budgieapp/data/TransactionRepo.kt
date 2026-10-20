@@ -2,6 +2,7 @@ package main.budgieapp.data
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Source
@@ -46,7 +47,7 @@ class TransactionRepo private constructor(private val uid: String) {
         return snapshot.documents.map(::decode).sortedByDescending { it.dateTimeMillis }
     }
 
-    suspend fun getInRange(startMillis: Long, endMillis: Long): List<TransactionEntity>{
+    suspend fun getInRange(startMillis: Long, endMillis: Long): List<TransactionEntity> {
         requireCurrentUser()
         require(startMillis <= endMillis)
 
@@ -77,20 +78,20 @@ class TransactionRepo private constructor(private val uid: String) {
         }
 
         val reference = transactions.document(transaction.id)
-        val goalReference = goalId?.let {
-            id -> firestore
-            .collection("users")
-            .document(uid)
-            .collection("goals")
-            .document(id)
+        val goalReference = goalId?.let { id ->
+            firestore
+                .collection("users")
+                .document(uid)
+                .collection("goals")
+                .document(id)
         }
 
         val created = firestore.runTransaction { operation ->
             val existing = operation.get(reference)
-            if (existing.exists()){
+            if (existing.exists()) {
                 false
-            }else {
-                if(goalReference != null && !operation.get(goalReference).exists()){
+            } else {
+                if (goalReference != null && !operation.get(goalReference).exists()) {
                     throw GoalNotFoundException()
                 }
                 operation.set(reference, transaction)
@@ -106,10 +107,10 @@ class TransactionRepo private constructor(private val uid: String) {
         requireCurrentUser()
         val documents = transactions.get(Source.SERVER).await().documents
         var deleted = 0
-        for (chunk in documents.chunked(200)){
+        for (chunk in documents.chunked(200)) {
             requireCurrentUser()
             val batch = firestore.batch()
-            for(document in chunk){
+            for (document in chunk) {
                 batch.delete(document.reference)
             }
             batch.commit().await()
@@ -120,14 +121,47 @@ class TransactionRepo private constructor(private val uid: String) {
     }
 
     suspend fun insertSample(samples: List<TransactionEntity>) {
-        for (sample in samples) {
-            insertIfAbsent(sample)
+        requireCurrentUser()
+        if (samples.isEmpty()) return
+
+        val uniqueSamples = samples.distinctBy { it.id }
+        for (sample in uniqueSamples) {
+            require(sample.id.isNotBlank())
+            require('/' !in sample.id)
+            require(sample.amountCents > 0L)
+            require(sample.type in setOf("INCOME", "EXPENSE"))
+            require(sample.goalId == null) {
+                "Sample transactions must not reference goals"
+            }
+        }
+
+        val existingIds = mutableListOf<String>()
+
+        for (chunk in uniqueSamples.chunked(10)){
+            requireCurrentUser()
+            val snapshot = transactions
+                .whereIn(FieldPath.documentId(), chunk.map { it.id })
+                .get(Source.SERVER)
+                .await()
+
+            requireCurrentUser()
+            existingIds.addAll(snapshot.documents.map { it.id })
+        }
+
+        val missingSamples = uniqueSamples.filter { it.id !in existingIds }
+        for (chunk in missingSamples.chunked(200)){
+            val batch = firestore.batch()
+            for (sample in chunk){
+                batch.set(transactions.document(sample.id), sample)
+            }
+            batch.commit().await()
+            requireCurrentUser()
         }
     }
 
     companion object {
-        fun forCurrentUser(): TransactionRepo{
-            val uid = requireNotNull(FirebaseAuth.getInstance().currentUser){
+        fun forCurrentUser(): TransactionRepo {
+            val uid = requireNotNull(FirebaseAuth.getInstance().currentUser) {
                 "Sign in before accessing transactions"
             }.uid
             return TransactionRepo(uid)

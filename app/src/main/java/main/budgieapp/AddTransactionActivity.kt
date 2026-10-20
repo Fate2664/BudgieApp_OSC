@@ -2,6 +2,7 @@ package main.budgieapp
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.icu.util.Calendar
 import android.net.Uri
@@ -16,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CancellationException
@@ -23,6 +25,8 @@ import kotlinx.coroutines.launch
 import main.budgieapp.data.GoalNotFoundException
 import main.budgieapp.data.TransactionEntity
 import main.budgieapp.data.TransactionRepo
+import java.io.File
+import java.io.IOException
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -41,7 +45,7 @@ data class Category(
 
 class AddTransactionActivity : AppCompatActivity() {
 
-    private val transactionRepo by lazy{
+    private val transactionRepo by lazy {
         TransactionRepo.forCurrentUser()
     }
 
@@ -59,6 +63,18 @@ class AddTransactionActivity : AppCompatActivity() {
     private var transactionType = TransactionType.EXPENSE
     private val selectedDateTime = Calendar.getInstance()
     private var attachmentUri: Uri? = null
+    private var pendingPhotoUri: Uri? = null
+    private val takePhoto =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            val photoUri = pendingPhotoUri
+            if (success && photoUri != null) {
+                attachmentUri = photoUri
+                findViewById<MaterialButton>(R.id.btnAttachment).text = getAttachmentName(photoUri)
+            } else {
+                photoUri?.let { contentResolver.delete(it, null, null) }
+            }
+            pendingPhotoUri = null
+        }
     private val attachmentPicker =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             if (uri != null) {
@@ -126,6 +142,10 @@ class AddTransactionActivity : AppCompatActivity() {
                 state.getLong("transaction_date_time", selectedDateTime.timeInMillis)
 
             attachmentUri = state.getString("transaction_attachment_uri")?.let {
+                Uri.parse(it)
+            }
+
+            pendingPhotoUri = state.getString("pending_photo_uri")?.let {
                 Uri.parse(it)
             }
         }
@@ -224,7 +244,24 @@ class AddTransactionActivity : AppCompatActivity() {
         //region Attachment
         val btnAttachment = findViewById<MaterialButton>(R.id.btnAttachment)
         btnAttachment.setOnClickListener {
-            attachmentPicker.launch(arrayOf("*/*"))
+            val popupMenu = PopupMenu(this, btnAttachment)
+
+            popupMenu.menu.add(0,0,0, "Take photo")
+            popupMenu.menu.add(0,1,1, "Choose file")
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId){
+                    0 -> {
+                        takeAttachmentPhoto()
+                        true
+                    }
+                    1 -> {
+                        attachmentPicker.launch(arrayOf("*/*"))
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popupMenu.show()
         }
         //endregion
 
@@ -259,6 +296,7 @@ class AddTransactionActivity : AppCompatActivity() {
             "transaction_status",
             findViewById<TextView>(R.id.txtStatus).text.toString()
         )
+        outState.putString("pending_photo_uri", pendingPhotoUri?.toString())
         super.onSaveInstanceState(outState)
     }
 
@@ -272,6 +310,29 @@ class AddTransactionActivity : AppCompatActivity() {
 
             }
         return "Selected attachment"
+    }
+
+    private fun takeAttachmentPhoto() {
+        try {
+            val directory = File(filesDir, "attachments")
+            if (!directory.exists() && !directory.mkdirs()) {
+                throw IOException("Could not create attachment directory")
+            }
+            val photoFile = File.createTempFile("receipt_", ".jpg", directory)
+            val photoUri =
+                FileProvider.getUriForFile(this, "${packageName}.fileprovider", photoFile)
+            pendingPhotoUri = photoUri
+
+            try {
+                takePhoto.launch(photoUri)
+            } catch (exception: ActivityNotFoundException) {
+                pendingPhotoUri = null
+                photoFile.delete()
+                Toast.makeText(this, "No camera app is available", Toast.LENGTH_LONG).show()
+            }
+        } catch (exception: IOException) {
+            Toast.makeText(this, "Could not create a file for the photo", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun saveTransaction() {
