@@ -22,6 +22,7 @@ import main.budgieapp.widgets.IncomeVsExpensesWidget
 import java.time.ZoneId
 import main.budgieapp.data.TransactionEntity
 import main.budgieapp.data.TransactionRepo
+import main.budgieapp.widgets.SummaryPieWidget
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -40,6 +41,13 @@ class DashboardActivity : AppCompatActivity() {
     private var expenseStructureRefreshJob: Job? = null
     private var selectedExpenseRange = CashFlowTimeRange.LAST_30_DAYS
     private var aiChatController: AIChatController? = null
+
+    private var summaryPieWidget: SummaryPieWidget? = null
+
+    private var summaryPieRefreshJob: Job? = null
+
+    private var selectedSummaryRange = CashFlowTimeRange.LAST_30_DAYS
+
 
     private val transactionRepo by lazy {
         TransactionRepo.forCurrentUser()
@@ -168,6 +176,15 @@ class DashboardActivity : AppCompatActivity() {
                 refreshExpenseStructure()
             }
         }
+
+        summaryPieWidget = SummaryPieWidget(
+            page.findViewById(R.id.SummaryPieWidget)
+        ).also { widget ->
+            widget.setupTimePeriodDropdown(selectedSummaryRange) { range ->
+                selectedSummaryRange = range
+                refreshSummaryPie()
+            }
+        }
     }
 
     private fun refreshAccountsPage() {
@@ -175,6 +192,7 @@ class DashboardActivity : AppCompatActivity() {
 
         refreshCashFlow()
         refreshExpenseStructure()
+        refreshSummaryPie()
 
         lifecycleScope.launch {
             IncomeVsExpensesWidget.refresh(
@@ -273,6 +291,38 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    private fun refreshSummaryPie() {
+        val widget = summaryPieWidget ?: return
+        summaryPieRefreshJob?.cancel()
+
+        summaryPieRefreshJob = lifecycleScope.launch {
+            widget.showMessage("Loading summary...")
+            try {
+                val range = selectedSummaryRange
+                val zone = ZoneId.systemDefault()
+                val nowMillis = System.currentTimeMillis()
+                val today = java.time.Instant.ofEpochMilli(nowMillis)
+                    .atZone(zone)
+                    .toLocalDate()
+                val startMillis = range.startDate(today)
+                    .atStartOfDay(zone)
+                    .toInstant()
+                    .toEpochMilli()
+                val transactions = transactionRepo.getInRange(startMillis, nowMillis)
+
+                widget.setTransactions(transactions)
+
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                Log.e("DashboardActivity", "Could not load summary pie", error)
+                widget.showMessage("Could not load summary")
+            }
+        }
+    }
+
 
     private fun openTransaction(type: TransactionType) {
         val intent = Intent(this, AddTransactionActivity::class.java).apply {
