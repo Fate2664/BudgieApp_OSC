@@ -128,7 +128,6 @@ We began with mock-ups of every screen and a navigation flow before writing any 
 | Authentication | Firebase Authentication |
 | Database | Firebase (Cloud Firestore) |
 | AI Assistant | LLM (Ollama, llama 3.2) |
-| Charts | TODO: library used for the graphs |
 | CI/CD | GitHub Actions |
 
 ---
