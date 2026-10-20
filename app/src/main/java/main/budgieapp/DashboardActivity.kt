@@ -39,6 +39,7 @@ class DashboardActivity : AppCompatActivity() {
     private var expenseStructureWidget: ExpenseStructureWidget? = null
     private var expenseStructureRefreshJob: Job? = null
     private var selectedExpenseRange = CashFlowTimeRange.LAST_30_DAYS
+    private var aiChatController: AIChatController? = null
 
     private val transactionRepo by lazy {
         TransactionRepo.forCurrentUser()
@@ -87,6 +88,7 @@ class DashboardActivity : AppCompatActivity() {
         val pager = findViewById<ViewPager2>(R.id.dashboardPager)
         val accountsTab = findViewById<View>(R.id.tabAccounts)
         val budgetsTab = findViewById<View>(R.id.tabBudgets)
+        val aiTab = findViewById<View>(R.id.tabAIChat)
 
         pager.adapter = DashboardPagerAdapter(
             onAccountsCreated = { page ->
@@ -97,13 +99,20 @@ class DashboardActivity : AppCompatActivity() {
             onBudgetsCreated = { page ->
                 budgetsPage = page
                 refreshBudgetsPage()
+            },
+            onAIChatCreated = { page ->
+                aiChatController = AIChatController(
+                    host = this,
+                    root = page
+                )
             }
         )
 
-        pager.offscreenPageLimit = 1
+        pager.offscreenPageLimit = 2
 
         accountsTab.setOnClickListener { pager.setCurrentItem(0, true) }
         budgetsTab.setOnClickListener { pager.setCurrentItem(1, true) }
+        aiTab.setOnClickListener { pager.setCurrentItem(2, true) }
 
         pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -113,10 +122,13 @@ class DashboardActivity : AppCompatActivity() {
                 }
 
                 if (actionsOpen) closeActionMenu()
+
+                fabDashboardActions.visibility = if (position == 2) View.GONE else View.VISIBLE
             }
         })
 
         updateSelectedTab(pager.currentItem)
+        fabDashboardActions.visibility = if (pager.currentItem == 2) View.GONE else View.VISIBLE
     }
 
     private fun updateSelectedTab(position: Int) {
@@ -126,8 +138,12 @@ class DashboardActivity : AppCompatActivity() {
         findViewById<View>(R.id.indicatorBudgets).visibility =
             if (position == 1) View.VISIBLE else View.INVISIBLE
 
+        findViewById<View>(R.id.indicatorAI).visibility =
+            if (position == 2) View.VISIBLE else View.INVISIBLE
+
         findViewById<View>(R.id.tabAccounts).isSelected = position == 0
         findViewById<View>(R.id.tabBudgets).isSelected = position == 1
+        findViewById<View>(R.id.tabAIChat).isSelected = position == 2
     }
 
     private fun setupAccountsPage(page: View) {

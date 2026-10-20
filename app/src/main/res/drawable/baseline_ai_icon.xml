@@ -1,0 +1,73 @@
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Blue circular background -->
+    <path
+        android:fillColor="@color/background_header"
+        android:pathData="M50,3 A47,47 0,1 1,50 97 A47,47 0,1 1,50 3 Z"/>
+
+    <!-- Robot antenna stem -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M44,36 L44,27"/>
+
+    <!-- Antenna ball -->
+    <path
+        android:fillColor="#EAF5FF"
+        android:pathData="M44,19 A5,5 0,1 1,44 29 A5,5 0,1 1,44 19 Z"/>
+
+    <!-- Left ear -->
+    <path
+        android:fillColor="#E6F4FF"
+        android:pathData="M20,47 Q20,43 24,43 H29 V64 H24 Q20,64 20,60 Z"/>
+
+    <!-- Right ear -->
+    <path
+        android:fillColor="#E6F4FF"
+        android:pathData="M59,43 H64 Q68,43 68,47 V60 Q68,64 64,64 H59 Z"/>
+
+    <!-- Main robot head -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M31,34 H57 Q64,34 64,42 V66 Q64,73 57,73 H31 Q24,73 24,66 V42 Q24,34 31,34 Z"/>
+
+    <!-- Light blue face panel -->
+    <path
+        android:fillColor="#E6F4FF"
+        android:pathData="M33,41 H55 Q58,41 58,45 V62 Q58,66 55,66 H33 Q30,66 30,62 V45 Q30,41 33,41 Z"/>
+
+    <!-- Left eye -->
+    <path
+        android:fillColor="#071D46"
+        android:pathData="M36,48 A3,3 0,1 1,36 54 A3,3 0,1 1,36 48 Z"/>
+
+    <!-- Right eye -->
+    <path
+        android:fillColor="#071D46"
+        android:pathData="M51,48 A3,3 0,1 1,51 54 A3,3 0,1 1,51 48 Z"/>
+
+    <!-- Smile -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#071D46"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:pathData="M39,59 Q44,64 49,59"/>
+
+    <!-- Large sparkle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M76,18 L80,29 L90,33 L80,37 L76,48 L72,37 L62,33 L72,29 Z"/>
+
+    <!-- Small sparkle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M82,47 L85,54 L92,57 L85,60 L82,67 L79,60 L72,57 L79,54 Z"/>
+
+</vector>
