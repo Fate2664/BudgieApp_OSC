@@ -38,11 +38,6 @@ Budgie is an Android budgeting app built for the OPSC7311 module at IIE Vega Sch
 
 Many budgeting apps overwhelm people with detail. Budgie takes the opposite approach: a clean interface, graphs and widgets that explain your finances at a glance, and an envelope-style system that helps you stay disciplined with your money.
 
-<!-- TODO: add a hero screenshot of the home page -->
-<p align="center">
-  <img src="docs/images/home-screen.png" alt="Budgie home screen" width="260"/>
-</p>
-
 ---
 
 ## 2. Purpose
@@ -102,7 +97,7 @@ A persistent footer gives access to **Home, Budget, Transactions** and **Setting
 Progress bars switch between green and red depending on whether the user is under or over their limit, so overspending is obvious without reading numbers.
 
 ### 4.4 Envelope-style budgeting
-Funds are allocated to categories ("envelopes") such as Groceries, Bills and Transport. This encourages spending discipline by making each category's limit visible.
+Funds are allocated to categories such as Groceries, Bills and Transport. This encourages spending discipline by making each category's limit visible.
 
 ### 4.5 Personalised AI, not a generic chatbot
 The assistant has context about the user's budget, limits and spending trends, so its answers are tailored. Responses are framed as recommendations rather than guaranteed financial advice.
@@ -148,8 +143,8 @@ We began with mock-ups of every screen and a navigation flow before writing any 
 <!-- TODO: fill in with what your team really did -->
 
 - **Version control:** all code lives in this repository so every change is tracked.
-- **Branching:** TODO describe your approach (e.g. `main` for stable code, feature branches per teammate).
-- **Commits:** TODO describe your commit message style.
+- **Branching:** Our most recent working build would remain on the main branch and other teammates would make use of other branches for adding new features.
+- **Commits:** Commits involved the main topic of the commit (what feature it was for) and the progress of it.
 - **Pull requests / code review:** TODO describe if and how you reviewed each other's work.
 - **Issues / project board:** TODO if you tracked tasks here.
 
