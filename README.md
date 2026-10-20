@@ -173,7 +173,7 @@ GitHub Actions automates checks every time code is pushed, so problems are caugh
 ### Prerequisites
 - Android Studio Version: Android Studio Quail 2 | 2026.1.2
 - Android device or emulator: min SDK 34
-- A Firebase project (TODO or explain how to use ours)
+- A Firebase project <!--(TODO or explain how to use ours)-->
 
 ### Setup
 
