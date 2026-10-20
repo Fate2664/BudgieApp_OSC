@@ -1,5 +1,6 @@
 package main.budgieapp.widgets
 
+import android.app.DatePickerDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -17,12 +18,17 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.google.android.material.checkbox.MaterialCheckBox
 import main.budgieapp.R
 import main.budgieapp.TransactionType
 import main.budgieapp.data.TransactionEntity
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Locale
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import kotlin.collections.plus
 
 private data class CategoryExpense(
     val name: String,
@@ -35,13 +41,29 @@ class ExpenseStructureWidget(private val rootView: View) {
     private val chart: PieChart = rootView.findViewById(R.id.expensePieChart)
     private val periodLabel: TextView = rootView.findViewById(R.id.txtTimePeriod)
     private val totalLabel: TextView = rootView.findViewById(R.id.txtTotalExpenses)
+    private val incomeTotalLabel: TextView = rootView.findViewById(R.id.txtExpenseTotalIncome)
     private val currency = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-ZA"))
     private val percentage = NumberFormat.getPercentInstance().apply { maximumFractionDigits = 1 }
     private var categories: List<CategoryExpense> = emptyList()
     private var totalCents = 0L
+    private val includeIncomeCheckbox: MaterialCheckBox =
+        rootView.findViewById(R.id.chkIncludeIncome)
+    private var transactions: List<TransactionEntity> = emptyList()
+    private var incomeCents = 0L
+    private var expenseCents = 0L
+    private val customDatesRow: View = rootView.findViewById(R.id.expenseCustomDates)
+    private val fromDateButton: TextView = rootView.findViewById(R.id.btnExpenseFromDate)
+    private val toDateButton: TextView = rootView.findViewById(R.id.btnExpenseToDate)
+    private var customFromDate = LocalDate.now().minusDays(29)
+    private var customToDate = LocalDate.now()
+    private var useCustomDates = false
+
+    val customDateRange: Pair<LocalDate, LocalDate>?
+        get() = if (useCustomDates) customFromDate to customToDate else null
 
     init {
         configureChart()
+        includeIncomeCheckbox.setOnCheckedChangeListener { _, _ -> rebuild() }
     }
 
     private fun configureChart() {
@@ -79,10 +101,10 @@ class ExpenseStructureWidget(private val rootView: View) {
                 formSize = 10f
                 textSize = 12f
                 textColor = Color.rgb(33, 33, 33)
-                xEntrySpace = 12f
+                xEntrySpace = 8f
                 yEntrySpace = 6f
                 yOffset = 12f
-                maxSizePercent = 0.4f
+                maxSizePercent = 0.95f
             }
         }
 
@@ -107,6 +129,41 @@ class ExpenseStructureWidget(private val rootView: View) {
         initialRange: CashFlowTimeRange,
         onRangeSelected: (CashFlowTimeRange) -> Unit
     ) {
+        var selectedRange = initialRange
+        customFromDate = initialRange.startDate(LocalDate.now())
+        val dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+        fun updateDateFields() {
+            fromDateButton.text = "From: ${customFromDate.format(dateFormat)}"
+            toDateButton.text = "To: ${customToDate.format(dateFormat)}"
+        }
+
+        fun pickDate(isFrom: Boolean) {
+            val date = if (isFrom) customFromDate else customToDate
+            val picker = DatePickerDialog(
+                rootView.context,
+                { _, year, month, day ->
+                    val selected = LocalDate.of(year, month + 1, day)
+                    if (isFrom) customFromDate = selected else customToDate = selected
+                    updateDateFields()
+                    onRangeSelected(selectedRange)
+                },
+                date.year, date.monthValue - 1, date.dayOfMonth
+            )
+            val zone = ZoneId.systemDefault()
+            if (isFrom) {
+                picker.datePicker.maxDate = customToDate.atStartOfDay(zone)
+                    .toInstant().toEpochMilli()
+            } else {
+                picker.datePicker.minDate = customFromDate.atStartOfDay(zone)
+                    .toInstant().toEpochMilli()
+            }
+            picker.show()
+        }
+
+        updateDateFields()
+        fromDateButton.setOnClickListener { pickDate(isFrom = true) }
+        toDateButton.setOnClickListener { pickDate(isFrom = false) }
         periodLabel.text = initialRange.title
         periodLabel.setOnClickListener {
             val options = CashFlowTimeRange.entries
@@ -115,11 +172,14 @@ class ExpenseStructureWidget(private val rootView: View) {
             options.forEachIndexed { index, range ->
                 popup.menu.add(0, index, index, range.title)
             }
+            popup.menu.add(0, options.size, options.size, "Custom")
 
             popup.setOnMenuItemClickListener { item ->
-                val range = options[item.itemId]
-                periodLabel.text = range.title
-                onRangeSelected(range)
+                useCustomDates = item.itemId == options.size
+                customDatesRow.visibility = if (useCustomDates) View.VISIBLE else View.GONE
+                if (!useCustomDates) selectedRange = options[item.itemId]
+                periodLabel.text = if (useCustomDates) "Custom" else selectedRange.title
+                onRangeSelected(selectedRange)
                 true
             }
 
@@ -128,6 +188,11 @@ class ExpenseStructureWidget(private val rootView: View) {
     }
 
     fun setTransactions(transactions: List<TransactionEntity>) {
+        this.transactions = transactions
+        rebuild()
+    }
+
+    private fun rebuild() {
         categories = transactions
             .filter { it.type == TransactionType.EXPENSE.name }
             .groupBy { it.categoryId }
@@ -143,12 +208,37 @@ class ExpenseStructureWidget(private val rootView: View) {
             .filter { it.amountCents > 0L }
             .sortedByDescending { it.amountCents }
 
+        expenseCents = categories.sumOf { it.amountCents }
+        incomeCents = transactions.filter { it.type == TransactionType.INCOME.name }
+            .sumOf { it.amountCents }
+
+        if (includeIncomeCheckbox.isChecked) {
+            val availableCents = incomeCents - expenseCents
+
+            if (availableCents > 0L) {
+                categories = categories + CategoryExpense(
+                    name = "Available",
+                    color = rootView.context.getColor(R.color.light_green),
+                    amountCents = availableCents
+                )
+            }
+        }
+
         totalCents = categories.sumOf { it.amountCents }
-        totalLabel.text = formatMoney(totalCents)
+        totalLabel.text = "Expense: ${formatMoney(expenseCents)}"
+        incomeTotalLabel.text = "Income: ${formatMoney(incomeCents)}"
+        incomeTotalLabel.visibility = if (includeIncomeCheckbox.isChecked) View.VISIBLE else View.GONE
 
         if (categories.isEmpty()) {
             chart.centerText = ""
-            chart.setNoDataText("No expenses in this period")
+            chart.setNoDataText(
+                "Net total: ${formatMoney(incomeCents - expenseCents)}\n" +
+                if (includeIncomeCheckbox.isChecked) {
+                    "No income or expenses in this period"
+                } else {
+                    "No expenses in this period"
+                }
+            )
             chart.clear()
             chart.invalidate()
             return
@@ -173,12 +263,17 @@ class ExpenseStructureWidget(private val rootView: View) {
         chart.data = PieData(dataSet)
         chart.notifyDataSetChanged()
 
-        chart.highlightValue(0f, 0, false)
-        showCategory(0)
+        chart.highlightValues(null)
+        showTotal()
         chart.invalidate()
     }
 
     fun showMessage(message: String) {
+        incomeTotalLabel.text = "Income: —"
+        incomeTotalLabel.visibility = if (includeIncomeCheckbox.isChecked) View.VISIBLE else View.GONE
+        transactions = emptyList()
+        incomeCents = 0L
+        expenseCents = 0L
         categories = emptyList()
         totalCents = 0L
         totalLabel.text = "—"
@@ -202,7 +297,8 @@ class ExpenseStructureWidget(private val rootView: View) {
     }
 
     private fun showTotal() {
-        chart.centerText = "Total expenses\n${formatMoney(totalCents)}"
+        chart.centerText = "Net total\n${formatMoney(incomeCents - expenseCents)}"
+
         chart.invalidate()
     }
 

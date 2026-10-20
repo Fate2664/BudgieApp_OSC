@@ -15,19 +15,19 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:background="@color/white"
         android:orientation="vertical"
-        android:background="@color/white">
+        android:padding="10dp">
 
         <TextView
-            android:id="@+id/txtExpenseTitle"
+            android:id="@+id/txtBalanceSummaryTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Expense Structure"
+            android:text="Balance Summary"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txtTip"
@@ -36,7 +36,7 @@
             android:text="Where does my money go?"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txtExpenseTitle" />
+            app:layout_constraintTop_toBottomOf="@id/txtBalanceSummaryTitle" />
 
         <View
             android:id="@+id/breaker"
@@ -47,29 +47,98 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txtTip" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
         <TextView
             android:id="@+id/txtTimePeriod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:layout_marginTop="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:drawablePadding="4dp"
+            android:focusable="true"
             android:gravity="center_vertical"
+            android:minHeight="48dp"
             android:paddingHorizontal="4dp"
             android:text="Last 30 days"
             android:textSize="14sp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground"
-            android:drawablePadding="4dp"
             app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24" />
 
-        <TextView
-            android:id="@+id/txtTotalExpenses"
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/chkIncludeIncome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
+            android:checked="false"
+            android:text="Include Income"
+            android:textSize="15sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/expenseCustomDates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/btnExpenseFromDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:drawablePadding="4dp"
+                android:text="From date"
+                android:textSize="17sp"
+                app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24" />
+
+            <TextView
+                android:id="@+id/btnExpenseToDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:drawablePadding="4dp"
+                android:text="To date"
+                android:textSize="17sp"
+                app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24" />
+        </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtTotalExpenses"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtExpenseTotalIncome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/expensePieChart"

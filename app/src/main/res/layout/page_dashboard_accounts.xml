@@ -14,10 +14,9 @@
         android:orientation="vertical"
         android:paddingHorizontal="5dp">
 
-
         <include
-            android:id="@+id/SummaryPieWidget"
-            layout="@layout/widget_summary_pie"
+            android:id="@+id/expenseStructureWidget"
+            layout="@layout/widget_expense_structure"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -36,15 +35,6 @@
         <include
             android:id="@+id/cashFlowWidget"
             layout="@layout/widget_cashflow_graph"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <include
-            android:id="@+id/expenseStructureWidget"
-            layout="@layout/widget_expense_structure"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
