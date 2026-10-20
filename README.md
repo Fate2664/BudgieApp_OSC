@@ -1,6 +1,5 @@
 <div align="center">
 
-<!-- TODO: replace with your icon: docs/images/budgie-icon.png -->
 <img src="docs/images/logo.png" alt="Budgie app icon" width="160"/>
 
 # Budgie
@@ -118,8 +117,6 @@ We began with mock-ups of every screen and a navigation flow before writing any 
 
 ## 5. Tech Stack
 
-<!-- TODO: confirm and edit this table to match what you actually used -->
-
 | Area | Technology |
 |---|---|
 | Platform | Android |
@@ -173,14 +170,13 @@ GitHub Actions automates checks every time code is pushed, so problems are caugh
 
 ## 7. Getting Started
 
-<!-- TODO: confirm these steps work on a clean machine -->
-
 ### Prerequisites
 - Android Studio Version: Android Studio Quail 2 | 2026.1.2
 - Android device or emulator: min SDK 34
 - A Firebase project (TODO or explain how to use ours)
 
 ### Setup
+
 ```bash
 # 1. Clone the repository
 git clone https://github.com/Fate2664/BudgieApp_OSC
@@ -191,9 +187,6 @@ git clone https://github.com/Fate2664/BudgieApp_OSC
 
 # 4. Sync Gradle and run the app
 ```
-
-### AI assistant setup
-<!-- TODO: explain how the LLM is set up/run so a marker could use it -->
 
 ---
 
@@ -224,10 +217,8 @@ Our project followed a plan covering research, design, development and refinemen
 - Wait, R., 2025. *Wallet by BudgetBakers review.* Finder. https://www.finder.com/uk/budgeting/wallet-budgetbakers-review
 - Budgetbakers, 2026. *What is the Wallet app?* https://support.budgetbakers.com/hc/en-us/articles/12212428113810-What-is-the-Wallet-app
 
-<!-- TODO: add the rest of your Part 1 references plus anything new (Firebase docs, charting library, etc.) -->
-
 ---
 
 <div align="center">
-Made by the Budgie team 🐦
+Made by the Budgie team
 </div>
