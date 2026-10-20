@@ -143,19 +143,30 @@ We began with mock-ups of every screen and a navigation flow before writing any 
 
 GitHub Actions automates checks every time code is pushed, so problems are caught early instead of at hand-in time.
 
-**Workflow file:** `.github/workflows/build.yml`
+**Workflow file:** [`.github/workflows/build.yml`](.github/workflows/build.yml)
 
 | Step | What it does |
 |---|---|
-| Trigger | TODO e.g. runs on every push and pull request to `master` |
-| Set up | TODO e.g. checks out code, sets up JDK |
-| Build | TODO e.g. builds the app with Gradle |
-| Test | TODO e.g. runs unit tests |
+| **Trigger** | Runs on every push and pull request to `master`, and can be started manually with the "Run workflow" button. |
+| **Check out code** | Downloads the repository onto a fresh Ubuntu virtual machine provided by GitHub. |
+| **Set up JDK 17** | Installs the Java version needed to build the Android project. |
+| **Set up Gradle** | Prepares Gradle and caches dependencies so later runs are faster. |
+| **Make `gradlew` executable** | Gives the Gradle wrapper permission to run on Linux. |
+| **Build debug APK** | Runs `./gradlew assembleDebug` to compile the app. If this step fails, the run is marked as failed. |
 
-<!-- add a screenshot of a green workflow run from the Actions tab -->
-<!--img src="docs/images/github-actions-run.png" alt="Successful GitHub Actions run" width="700"/-->
+**Why this matters:** This feature would be very useful had we used it from the start. In simple terms every time one of us pushes code to `master`, this feature automatically picks up the latest version of the project and tries to build the app, just as we would in Android Studio. It then reports back with a pass or fail. This would've saved a lot more time for programming.
 
-**Why this matters:** TODO 2-3 sentences on the benefit to your team (catching build errors, consistency, saving time).
+**What happens when we push code:**
+
+1. A team member pushes a commit to `master`.
+2. GitHub sees the push and starts the workflow automatically, with no one having to click anything.
+3. GitHub starts a brand new, empty computer in the cloud.
+4. The workflow downloads our code onto that computer and installs Java and Gradle, the tools needed to build an Android app.
+5. It builds the app (`./gradlew assembleDebug`).
+6. If the build succeeds, the run shows a green tick and the badge at the top of this README stays green. If something is wrong, the run shows a red cross and the log shows exactly which step failed and why.
+
+**Why a fresh computer matters:** An app can work on one person's laptop only because of something installed or saved on that machine, such as a leftover file or a different tool version. Because the workflow starts from nothing every time, a green result tells us the project builds from the code in the repository alone. This tell us what we would need to get it running.
+
 
 ---
 
@@ -164,8 +175,8 @@ GitHub Actions automates checks every time code is pushed, so problems are caugh
 <!-- TODO: confirm these steps work on a clean machine -->
 
 ### Prerequisites
-- Android Studio Version ()
-- Android device or emulator min SDK 34
+- Android Studio Version: Android Studio Quail 2 | 2026.1.2
+- Android device or emulator: min SDK 34
 - A Firebase project (TODO or explain how to use ours)
 
 ### Setup
@@ -189,7 +200,6 @@ git clone https://github.com/Fate2664/BudgieApp_OSC
 
 Our project followed a plan covering research, design, development and refinement.
 
-<!-- TODO: add your Gantt chart image -->
 <img src="docs/images/gantt-chart.png" alt="Project timeline" width="700"/>
 
 ---
