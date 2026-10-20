@@ -88,21 +88,24 @@ Budgie was created to:
 The interface prioritises clarity and ease of navigation. Information is shown in widgets that use either graphs or short numbers, with brief descriptions so users understand their data at a glance.
 
 ### 4.2 Consistent navigation
-A persistent footer gives access to **Home, Budget, Transactions** and **Settings** from every screen. A header holds the user's profile, notifications and the AI assistant button.
+A persistent header holds navigation to **Accounts**, **Budgets & Goals** and the **AI Chatbot** and **Income & Expense* tracking can be accessed using the plus on the bottom-right side of the user's screen.
 
 ### 4.3 Visual feedback
 Progress bars switch between green and red depending on whether the user is under or over their limit, so overspending is obvious without reading numbers.
 
-### 4.4 Envelope-style budgeting
-Funds are allocated to categories such as Groceries, Bills and Transport. This encourages spending discipline by making each category's limit visible.
+### 4.4 Category-style budgeting
+Funds are allocated to categories such as Groceries, Bills and Transport, users can make their own custom categories too. This encourages spending discipline by making each category's limit visible.
 
-### 4.5 Personalised AI, not a generic chatbot
+### 4.5 Financial Goals
+These goals are set by users in order to save for a large scale future purchase or investment, users can also set a target date for this financial goal.
+
+### 4.6 Personalised AI, not a generic chatbot
 The assistant has context about the user's budget, limits and spending trends, so its answers are tailored. Responses are framed as recommendations rather than guaranteed financial advice.
 
-### 4.6 Security and privacy
+### 4.7 Security and privacy
 Users can only access their own financial data. The AI assistant is limited to the authenticated user's information.
 
-### 4.7 Design process
+### 4.8 Design process
 We began with mock-ups of every screen and a navigation flow before writing any code.
 
 | Planned (mock-up) | Final (app) |
@@ -166,7 +169,6 @@ GitHub Actions automates checks every time code is pushed, so problems are caugh
 6. If the build succeeds, the run shows a green tick and the badge at the top of this README stays green. If something is wrong, the run shows a red cross and the log shows exactly which step failed and why.
 
 **Why a fresh computer matters:** An app can work on one person's laptop only because of something installed or saved on that machine, such as a leftover file or a different tool version. Because the workflow starts from nothing every time, a green result tells us the project builds from the code in the repository alone. This tell us what we would need to get it running.
-
 
 ---
 
