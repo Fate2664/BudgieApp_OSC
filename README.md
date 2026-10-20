@@ -11,7 +11,7 @@
 ![Language](https://img.shields.io/badge/language-Kotlin-7F52FF?logo=kotlin&logoColor=white)
 ![Backend](https://img.shields.io/badge/backend-Firebase-FFCA28?logo=firebase&logoColor=black)
 <!-- TODO: replace OWNER/REPO with your repo path so the build badge works -->
-![Build](https://github.com/OWNER/REPO/actions/workflows/build.yml/badge.svg)
+![Build](https://github.com/Fate2664/BudgieApp_OSC/actions/workflows/build.yml/badge.svg)
 
 </div>
 
@@ -42,8 +42,6 @@ Many budgeting apps overwhelm people with detail. Budgie takes the opposite appr
 
 ## 2. Purpose
 
-<!-- Write this in your own words. Suggested points: -->
-
 Budgie was created to:
 
 - Give people a **simple, intuitive** way to track income and expenses.
@@ -70,8 +68,6 @@ Budgie was created to:
 | **Expense Pie Chart** | See at a glance how your spending is split between categories. |
 | **Goal System** | Set and work towards budgeting goals that encourage good financial habits. |
 | **AI Budgeting Assistant (LLM)** | A chat assistant that uses your own budget data to give personalised recommendations. |
-
-<!-- TODO: add a screenshot for each feature (or a few grouped side by side) -->
 
 ### Screenshots
 
@@ -108,14 +104,14 @@ Users can only access their own financial data. The AI assistant is limited to t
 ### 4.7 Design process
 We began with mock-ups of every screen and a navigation flow before writing any code.
 
-<!-- TODO: add 1-2 mock-up images next to the final screenshots to show how the design evolved -->
 | Planned (mock-up) | Final (app) |
 |:---:|:---:|
 | <img src="docs/images/mockup-login.png" width="220"/> | <img src="docs/images/login.png" width="220"/> |
 | <img src="docs/images/mockup-home.png" width="220"/> | <img src="docs/images/dashboard.png" width="220"/> |
 | <img src="docs/images/mockup-graphs.png" width="220"/> | <img src="docs/images/graphs.png" width="220"/> |
 
-<!-- TODO: mention any changes from the plan and why (e.g. features dropped or added). Be honest, this shows good design thinking. -->
+We originally planned to 
+
 
 ---
 
