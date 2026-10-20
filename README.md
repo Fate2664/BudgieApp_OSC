@@ -11,7 +11,7 @@
 ![Language](https://img.shields.io/badge/language-Kotlin-7F52FF?logo=kotlin&logoColor=white)
 ![Backend](https://img.shields.io/badge/backend-Firebase-FFCA28?logo=firebase&logoColor=black)
 <!-- TODO: replace OWNER/REPO with your repo path so the build badge works -->
-![Build](https://github.com/Fate2664/BudgieApp_OSC/actions/workflows/build.yml/badge.svg)
+![Build](https://github.com/Fate2664/BudgieApp_OSC/actions/workflows/bluild.yml/badge.svg)
 
 </div>
 
