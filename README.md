@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- TODO: replace with your icon: docs/images/budgie-icon.png -->
-<img src="docs/images/budgie-icon.png" alt="Budgie app icon" width="160"/>
+<img src="docs/images/logo.png" alt="Budgie app icon" width="160"/>
 
 # Budgie
 
@@ -116,7 +116,9 @@ We began with mock-ups of every screen and a navigation flow before writing any 
 <!-- TODO: add 1-2 mock-up images next to the final screenshots to show how the design evolved -->
 | Planned (mock-up) | Final (app) |
 |:---:|:---:|
+| <img src="docs/images/mockup-login.png" width="220"/> | <img src="docs/images/login.png" width="220"/> |
 | <img src="docs/images/mockup-home.png" width="220"/> | <img src="docs/images/home-screen.png" width="220"/> |
+| <img src="docs/images/mockup-graphs.png" width="220"/> | <img src="docs/images/graphs.png" width="220"/> |
 
 <!-- TODO: mention any changes from the plan and why (e.g. features dropped or added). Be honest, this shows good design thinking. -->
 
@@ -178,14 +180,14 @@ GitHub Actions automates checks every time code is pushed, so problems are caugh
 <!-- TODO: confirm these steps work on a clean machine -->
 
 ### Prerequisites
-- Android Studio (TODO version)
-- Android device or emulator (TODO min SDK)
+- Android Studio Version ()
+- Android device or emulator min SDK 34
 - A Firebase project (TODO or explain how to use ours)
 
 ### Setup
 ```bash
 # 1. Clone the repository
-git clone https://github.com/OWNER/REPO.git
+git clone https://github.com/Fate2664/REPO.git
 
 # 2. Open the project in Android Studio
 
