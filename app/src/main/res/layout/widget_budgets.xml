@@ -83,7 +83,7 @@
             android:indeterminate="false"
             android:max="100"
             android:progressDrawable="@drawable/custom_progressbar"
-            android:progressTint="#1CDE21"
+            android:progressTint="@color/category_blue"
             android:progress="60"/>
 
         <TextView

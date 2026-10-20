@@ -2,6 +2,11 @@ package main.budgieapp
 
 import retrofit2.HttpException
 import android.os.Bundle
+import android.graphics.Typeface
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -258,7 +263,7 @@ class AIChatController(private val host: AppCompatActivity, private val root: Vi
 
         override fun onBindViewHolder(holder: MessageHolder, position: Int) {
             val message = messages[position]
-            holder.text.text = message.text
+            holder.text.text = if (message.isUser) message.text else formatAIResponse(message.text)
             holder.timestamp.text =
                 android.text.format.DateFormat.getTimeFormat(holder.itemView.context).format(
                     Date(message.timestamp)
@@ -275,6 +280,37 @@ class AIChatController(private val host: AppCompatActivity, private val root: Vi
             val index = messages.lastIndex
             messages.removeAt(index)
             notifyItemRemoved(index)
+        }
+
+        private fun formatAIResponse(text: String): CharSequence {
+            val formatted = SpannableStringBuilder(text)
+            val emphasis = listOf(
+                Regex("(?<!\\*)\\*\\*\\*(?=\\S)(.+?)(?<=\\S)\\*\\*\\*(?!\\*)") to Typeface.BOLD_ITALIC,
+                Regex("(?<!\\*)\\*\\*(?=\\S)(.+?)(?<=\\S)\\*\\*(?!\\*)") to Typeface.BOLD,
+                Regex("(?<!\\*)\\*(?=\\S)(.+?)(?<=\\S)\\*(?!\\*)") to Typeface.ITALIC
+            )
+            for ((pattern, style) in emphasis) {
+                // Work backwards so removing markers keeps earlier match positions valid.
+                for (match in pattern.findAll(formatted.toString()).toList().asReversed()) {
+                    val content = match.groups[1]!!
+                    formatted.delete(content.range.last + 1, match.range.last + 1)
+                    formatted.delete(match.range.first, content.range.first)
+                    formatted.setSpan(
+                        StyleSpan(style), match.range.first,
+                        match.range.first + content.value.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
+            val headings = Regex("(?m)^ {0,3}#{1,6}[ \\t]+(.+?)(?:[ \\t]+#+)?[ \\t]*$")
+            for (match in headings.findAll(formatted.toString()).toList().asReversed()) {
+                val content = match.groups[1]!!
+                formatted.delete(content.range.last + 1, match.range.last + 1)
+                formatted.delete(match.range.first, content.range.first)
+                val end = match.range.first + content.value.length
+                formatted.setSpan(StyleSpan(Typeface.BOLD), match.range.first, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                formatted.setSpan(RelativeSizeSpan(1.15f), match.range.first, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            return formatted
         }
 
     }
