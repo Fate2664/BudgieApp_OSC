@@ -67,6 +67,7 @@ Budgie was created to:
 | **Cash Flow Graph** | Compare income against expenditure over a selected period to spot trends. |
 | **Expense Pie Chart** | See at a glance how your spending is split between categories. |
 | **Goal System** | Set and work towards budgeting goals that encourage good financial habits. |
+| **Gamification Features** | These gamified features are intended to enhance the user experience and prompt further engagement. |
 | **AI Budgeting Assistant (LLM)** | A chat assistant that uses your own budget data to give personalised recommendations. |
 
 ### Screenshots
@@ -110,9 +111,6 @@ We began with mock-ups of every screen and a navigation flow before writing any 
 | <img src="docs/images/mockup-home.png" width="220"/> | <img src="docs/images/dashboard.png" width="220"/> |
 | <img src="docs/images/mockup-graphs.png" width="220"/> | <img src="docs/images/graphs.png" width="220"/> |
 
-We originally planned to 
-
-
 ---
 
 ## 5. Tech Stack
@@ -126,7 +124,7 @@ We originally planned to
 | IDE | Android Studio |
 | Authentication | Firebase Authentication |
 | Database | Firebase (Cloud Firestore) |
-| AI Assistant | LLM (TODO: state model and how it is integrated, e.g. Ollama) |
+| AI Assistant | LLM (Ollama, llama 3.2) |
 | Charts | TODO: library used for the graphs |
 | CI/CD | GitHub Actions |
 
@@ -136,13 +134,10 @@ We originally planned to
 
 ### 6.1 How we used GitHub
 
-<!-- TODO: fill in with what your team really did -->
-
 - **Version control:** all code lives in this repository so every change is tracked.
 - **Branching:** Our most recent working build would remain on the main branch and other teammates would make use of other branches for adding new features.
-- **Commits:** Commits involved the main topic of the commit (what feature it was for) and the progress of it.
-- **Pull requests / code review:** TODO describe if and how you reviewed each other's work.
-- **Issues / project board:** TODO if you tracked tasks here.
+- **Commits:** Commits involved the main topic of the commit (what feature it was for) and the progress of it at the time of the commit.
+- **Pull requests / code review:** Before merging to main the branch code would be tested to ensure its stability.
 
 ### 6.2 How we used GitHub Actions
 
@@ -178,7 +173,7 @@ GitHub Actions automates checks every time code is pushed, so problems are caugh
 ### Setup
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Fate2664/REPO.git
+git clone https://github.com/Fate2664/BudgieApp_OSC
 
 # 2. Open the project in Android Studio
 
