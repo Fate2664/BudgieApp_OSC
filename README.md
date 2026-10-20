@@ -143,19 +143,17 @@ We began with mock-ups of every screen and a navigation flow before writing any 
 
 GitHub Actions automates checks every time code is pushed, so problems are caught early instead of at hand-in time.
 
-<!-- TODO: paste your real workflow file path and explain it -->
-
-**Workflow file:** `.github/workflows/bluild.yml`
+**Workflow file:** `.github/workflows/build.yml`
 
 | Step | What it does |
 |---|---|
-| Trigger | TODO e.g. runs on every push and pull request to `main` |
+| Trigger | TODO e.g. runs on every push and pull request to `master` |
 | Set up | TODO e.g. checks out code, sets up JDK |
 | Build | TODO e.g. builds the app with Gradle |
 | Test | TODO e.g. runs unit tests |
 
-<!-- TODO: add a screenshot of a green workflow run from the Actions tab -->
-<img src="docs/images/github-actions-run.png" alt="Successful GitHub Actions run" width="700"/>
+<!-- add a screenshot of a green workflow run from the Actions tab -->
+<!--img src="docs/images/github-actions-run.png" alt="Successful GitHub Actions run" width="700"/-->
 
 **Why this matters:** TODO 2-3 sentences on the benefit to your team (catching build errors, consistency, saving time).
 
