@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -20,95 +19,171 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <TextView
-            android:id="@+id/txtBudgetHeading"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Budgets"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/txtTip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Am I keeping up with my budgets?"
-            android:textSize="15sp" />
+            <ImageView
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="BudgetsIcon"
+                android:src="@drawable/baseline_bar_chart_24"
+                app:tint="@color/blue" />
+
+            <TextView
+                android:id="@+id/txtTimePeriod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Monthly budgets"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24" />
+        </LinearLayout>
 
         <View
             android:id="@+id/breaker"
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:layout_marginTop="5dp"
-            android:background="@color/input_blue" />
-
-        <TextView
-            android:id="@+id/txtTimePeriod"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
             android:layout_marginTop="8dp"
-            android:text="THIS MONTH"
-            android:textStyle="bold"
-            android:textColor="@color/soft_black"
-            android:textSize="14sp"
-            app:drawableEndCompat="@drawable/baseline_arrow_drop_down_24"/>
-
+            android:background="@color/blue" />
 
         <!-- Monthly Budget Summary -->
-        <TextView
-            android:id="@+id/txtBudgetRemaining"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/soft_black"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:text="R3 200 remaining"/>
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/txtBudgetSpent"
+            <TextView
+                android:id="@+id/txtBudgetRemaining"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="10dp"
+                android:text="R3 200"
+                android:textColor="@color/darkTeal"
+                android:textSize="35sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtRemaining"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:text="remaining"
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/soft_black"
-            android:textSize="15sp"
-            android:text="R4 800 spent of R8 000" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtBudgetSpent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="R4 800 spent of R8 000"
+                android:textColor="@color/soft_black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txtBudgetPercentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="end"
+                android:text="60%"
+                android:textColor="@color/soft_black"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
         <ProgressBar
             android:id="@+id/progressMonthlyBudget"
             style="?android:progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="20dp"
             android:layout_marginTop="12dp"
             android:indeterminate="false"
             android:max="100"
-            android:progressDrawable="@drawable/custom_progressbar"
-            android:progressTint="@color/category_blue"
-            android:progress="60"/>
+            android:progress="60"
+            android:theme="@style/ProgressTeal"
+            android:progressDrawable="@drawable/custom_progressbar" />
 
-        <TextView
-            android:id="@+id/txtBudgetPercentage"
-            android:layout_width="match_parent"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardBudgetStreak"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="end"
-            android:textColor="@color/soft_black"
-            android:textSize="13sp"
-            android:text="60% used" />
+            android:layout_marginTop="12dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:cardBackgroundColor="#1D03CAB8"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            tools:visibility="visible">
 
-        <View
-            android:id="@+id/breaker2"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/input_blue"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="10dp">
+
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:cardBackgroundColor="@color/darkTeal"
+                    app:cardCornerRadius="38dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="star"
+                        app:tint="@color/white"
+                        android:src="@drawable/baseline_star_24"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/txtBudgetStreak"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/darkTeal"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="2 months within budget" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
 
         <!-- Individual Budgets -->
         <LinearLayout
             android:id="@+id/budgetListContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="10dp"
             android:orientation="vertical">
 
 
@@ -123,15 +198,15 @@
         android:layout_height="48dp"
         android:layout_gravity="end"
         android:layout_margin="5dp"
+        android:contentDescription="Create new budget"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:padding="0dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:contentDescription="Create new budget"
-        app:backgroundTint="@color/background_header"
+        app:backgroundTint="@color/blue"
         app:cornerRadius="24dp"
         app:icon="@drawable/baseline_add_24"
         app:iconGravity="textStart"

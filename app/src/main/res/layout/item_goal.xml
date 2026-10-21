@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/goalContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="110dp">
+    android:paddingTop="12dp"
+    android:paddingBottom="16dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardGoalIcon"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-
+        android:layout_width="82dp"
+        android:layout_height="82dp"
         app:cardBackgroundColor="@color/light_blue"
-        app:cardCornerRadius="32dp"
+        app:cardCornerRadius="46dp"
         app:cardElevation="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:strokeWidth="0dp">
 
         <ImageView
             android:id="@+id/imgGoalIcon"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             android:layout_gravity="center"
-            android:contentDescription="Vehicle goal"
+            android:contentDescription="Goal icon"
             android:src="@drawable/baseline_directions_car_24"
-            app:tint="@color/white"/>
+            app:tint="@color/white" />
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -33,41 +34,55 @@
         android:id="@+id/txtGoalName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="4dp"
         android:text="New Vehicle"
         android:textColor="@color/soft_black"
-        android:textSize="21sp"
+        android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/btnOptions"
         app:layout_constraintStart_toEndOf="@id/cardGoalIcon"
-        app:layout_constraintEnd_toStartOf="@+id/txtGoalPercentage"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Options menu -->
+    <ImageButton
+        android:id="@+id/btnOptions"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Goal options"
+        android:padding="12dp"
+        android:src="@drawable/baseline_more_vert_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/soft_black" />
+
+    <!-- Target date -->
     <TextView
         android:id="@+id/txtGoalTargetDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:text="Target date: 24/09/2026"
+        android:layout_marginTop="3dp"
         android:textColor="@color/soft_black"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/cardGoalIcon"
-        app:layout_constraintEnd_toStartOf="@id/txtGoalPercentage"
-        app:layout_constraintTop_toBottomOf="@id/txtGoalName"/>
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/btnOptions"
+        app:layout_constraintStart_toStartOf="@id/txtGoalName"
+        app:layout_constraintTop_toBottomOf="@id/txtGoalName"
+        tools:text="Target date: 24 Sep 2026" />
 
     <TextView
         android:id="@+id/txtGoalSavedAmount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="8dp"
-        android:text="R5 000"
         android:textColor="@color/soft_black"
-        android:textSize="19sp"
-        app:layout_constraintStart_toEndOf="@id/cardGoalIcon"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@id/txtGoalPercentage"
+        app:layout_constraintStart_toStartOf="@id/txtGoalName"
         app:layout_constraintTop_toBottomOf="@id/txtGoalTargetDate"
-        app:layout_constraintEnd_toStartOf="@id/txtGoalPercentage"/>
+        tools:text="R2 000 / R5 000" />
 
     <TextView
         android:id="@+id/txtGoalPercentage"
@@ -76,51 +91,180 @@
         android:layout_marginEnd="12dp"
         android:text="71%"
         android:textColor="@color/soft_black"
-        android:textSize="16sp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/txtGoalSavedAmount"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/txtGoalSavedAmount"
-        app:layout_constraintBottom_toBottomOf="@+id/txtGoalSavedAmount"/>
+        app:layout_constraintTop_toTopOf="@+id/txtGoalSavedAmount" />
 
     <ProgressBar
         android:id="@+id/goalProgress"
         style="?android:progressBarStyleHorizontal"
         android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginTop="5dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="75dp"
         android:max="100"
         android:progress="71"
         android:progressDrawable="@drawable/custom_progressbar"
-        app:layout_constraintStart_toStartOf="@+id/txtGoalSavedAmount"
         app:layout_constraintEnd_toEndOf="@+id/txtGoalPercentage"
-        app:layout_constraintTop_toBottomOf="@+id/txtGoalSavedAmount"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtGoalSavedAmount" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/goalMilestone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintEnd_toEndOf="@id/goalProgress"
+        app:layout_constraintStart_toStartOf="@id/goalProgress"
+        app:layout_constraintTop_toBottomOf="@id/goalProgress">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="#D5D5D5"
+            app:layout_constraintBottom_toBottomOf="@id/milestone25"
+            app:layout_constraintEnd_toEndOf="@id/milestone100"
+            app:layout_constraintStart_toStartOf="@id/milestone25"
+            app:layout_constraintTop_toTopOf="@id/milestone25" />
+
+        <TextView
+            android:id="@+id/milestone25"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/goal_milestone_circle"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@id/milestone50"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/milestone50"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/goal_milestone_circle"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@id/milestone75"
+            app:layout_constraintStart_toEndOf="@id/milestone25"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+        android:id="@+id/milestone75"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@drawable/goal_milestone_circle"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/milestone50"
+        app:layout_constraintEnd_toStartOf="@id/milestone100"
+        app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/milestone100"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/goal_milestone_circle"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/milestone75"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="25%"
+            android:textColor="@color/soft_black"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/milestone25"
+            app:layout_constraintStart_toStartOf="@id/milestone25"
+            app:layout_constraintTop_toBottomOf="@id/milestone25" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="50%"
+            android:textColor="@color/soft_black"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/milestone50"
+            app:layout_constraintStart_toStartOf="@id/milestone50"
+            app:layout_constraintTop_toBottomOf="@id/milestone50" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="75%"
+            android:textColor="@color/soft_black"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/milestone75"
+            app:layout_constraintStart_toStartOf="@id/milestone75"
+            app:layout_constraintTop_toBottomOf="@id/milestone75" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="100%"
+            android:textColor="@color/soft_black"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/milestone100"
+            app:layout_constraintTop_toBottomOf="@id/milestone100" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/txtGoalMilestoneContext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/soft_black"
+        android:textSize="18sp"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="@id/btnAddMoney"
+        app:layout_constraintEnd_toEndOf="@id/btnAddMoney"
+        app:layout_constraintTop_toBottomOf="@id/goalMilestone"
+        tools:text="R500 until halfway" />
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAddMoney"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginTop="5dp"
-        android:backgroundTint="@color/background_header"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="50dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
         android:text="Add Money"
         android:textAllCaps="false"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:cornerRadius="20dp"
-        app:icon="@drawable/baseline_add_24"
-        app:iconGravity="textStart"
-        app:strokeColor="@color/soft_black"
-        app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/goalProgress"
-        app:layout_constraintEnd_toEndOf="@id/goalProgress"/>
-
-    <ImageButton
-        android:id="@+id/btnOptions"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/baseline_more_vert_24"
-        android:backgroundTint="@android:color/transparent"
-        app:tint="@color/soft_black"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:backgroundTint="@color/background_header"
+        app:cornerRadius="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtGoalMilestoneContext"
+        app:strokeWidth="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

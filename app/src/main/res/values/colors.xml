@@ -30,4 +30,7 @@
     <color name="category_teal">#2196F3</color>
     <color name="category_pink">#F06292</color>
     <color name="category_yellow">#FFEB3B</color>
+    <color name="darkTeal">#0F8785</color>
+    <color name="Teal">#13AB9A</color>
+    <color name="blue">#419AFF</color>
 </resources>

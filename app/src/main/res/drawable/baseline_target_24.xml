@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Outer target ring -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/blue"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M15.2,3.3
+                          A9.2,9.2 0,1 0,20.7 9.2"/>
+
+    <!-- Inner target ring -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/blue"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M12.9,8.2
+                          A4.3,4.3 0,1 0,16.3 12.5"/>
+
+    <!-- Dart shaft -->
+    <path
+        android:fillColor="#6242C7"
+        android:pathData="M12,12
+                          L17.7,5.2
+                          L19.9,7.5
+                          L12.9,12.9
+                          Z"/>
+
+    <!-- Dart upper flight -->
+    <path
+        android:fillColor="#6242C7"
+        android:pathData="M17.3,5.7
+                          L19.7,1.6
+                          L20.6,4.7
+                          L19.1,6.6
+                          Z"/>
+
+    <!-- Dart right flight -->
+    <path
+        android:fillColor="#6242C7"
+        android:pathData="M18.1,6
+                          L20.6,4.7
+                          L23,5.6
+                          L19.3,8
+                          Z"/>
+
+</vector>

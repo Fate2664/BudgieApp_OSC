@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ProgressTeal" parent="">
+        <item name="colorPrimary">#16BAB1</item>
+        <item name="colorSecondary">#139B94</item>
+    </style>
+
+    <style name="ProgressBlue" parent="">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorSecondary">#3883D9</item>
+    </style>
+
+</resources>

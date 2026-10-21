@@ -57,7 +57,7 @@
             app:layout_constraintTop_toTopOf="parent"
 
             app:tint="@color/white"
-            android:src="@drawable/baseline_add_24"/>
+            android:src="@drawable/baseline_check_24"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- endregion -->
