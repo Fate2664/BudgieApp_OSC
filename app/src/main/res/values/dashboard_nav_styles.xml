@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DashboardNavIndicator">
+
+        <item name="android:color">#EAF4FF</item>
+
+        <item name="android:width">96dp</item>
+
+        <item name="android:height">30dp</item>
+
+        <item name="shapeAppearance">@style/DashboardNavIndicatorShape
+        </item>
+    </style>
+
+    <style name="DashboardNavIndicatorShape">
+
+        <item name="cornerFamily">rounded</item>
+
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>

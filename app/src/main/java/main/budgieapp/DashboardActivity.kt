@@ -6,8 +6,12 @@ import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.setPadding
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CancellationException
@@ -52,6 +56,15 @@ class DashboardActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_dashboard)
 
+        val root = findViewById<View>(R.id.main)
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, inserts ->
+            val bars = inserts.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(bars.left, bars.top, bars.right, 0)
+            inserts
+        }
+
+        ViewCompat.requestApplyInsets(root)
+
         fabDashboardActions = findViewById(R.id.fabDashboardActions)
         fabAddExpense = findViewById(R.id.fabAddExpense)
         fabAddIncome = findViewById(R.id.fabAddIncome)
@@ -88,9 +101,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun setupDashboardPager() {
         val pager = findViewById<ViewPager2>(R.id.dashboardPager)
-        val accountsTab = findViewById<View>(R.id.tabAccounts)
-        val budgetsTab = findViewById<View>(R.id.tabBudgets)
-        val aiTab = findViewById<View>(R.id.tabAIChat)
+        val bottomNav = findViewById<BottomNavigationView>(R.id.dashboardBottomNav)
 
         pager.adapter = DashboardPagerAdapter(
             onAccountsCreated = { page ->
@@ -112,9 +123,19 @@ class DashboardActivity : AppCompatActivity() {
 
         pager.offscreenPageLimit = 2
 
-        accountsTab.setOnClickListener { pager.setCurrentItem(0, true) }
-        budgetsTab.setOnClickListener { pager.setCurrentItem(1, true) }
-        aiTab.setOnClickListener { pager.setCurrentItem(2, true) }
+        bottomNav.setOnItemSelectedListener { item ->
+            val position = when (item.itemId) {
+
+                R.id.tabAccounts -> 0
+                R.id.tabBudgets -> 1
+                R.id.tabAIChat -> 2
+                else -> return@setOnItemSelectedListener false
+            }
+            if (pager.currentItem != position) {
+                pager.setCurrentItem(position, true)
+            }
+            true
+        }
 
         pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -134,18 +155,15 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun updateSelectedTab(position: Int) {
-        findViewById<View>(R.id.indicatorAccounts).visibility =
-            if (position == 0) View.VISIBLE else View.INVISIBLE
+        val itemId = when (position) {
+            0 -> R.id.tabAccounts
+            1 -> R.id.tabBudgets
+            2 -> R.id.tabAIChat
+            else -> return
+        }
 
-        findViewById<View>(R.id.indicatorBudgets).visibility =
-            if (position == 1) View.VISIBLE else View.INVISIBLE
-
-        findViewById<View>(R.id.indicatorAI).visibility =
-            if (position == 2) View.VISIBLE else View.INVISIBLE
-
-        findViewById<View>(R.id.tabAccounts).isSelected = position == 0
-        findViewById<View>(R.id.tabBudgets).isSelected = position == 1
-        findViewById<View>(R.id.tabAIChat).isSelected = position == 2
+        findViewById<BottomNavigationView>(R.id.dashboardBottomNav).menu.findItem(itemId).isChecked =
+            true
     }
 
     private fun setupAccountsPage(page: View) {
@@ -280,9 +298,6 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
     }
-
-
-
 
 
     private fun openTransaction(type: TransactionType) {

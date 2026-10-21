@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/tabAccounts"
+        android:icon="@drawable/houseicon"
+        android:title="Accounts" />
+
+    <item
+        android:id="@+id/tabBudgets"
+        android:icon="@drawable/baseline_pie_chart_24"
+        android:title="Budgets &amp; Goals" />
+
+    <item
+        android:id="@+id/tabAIChat"
+        android:icon="@drawable/baseline_chat_24"
+        android:title="AI Chat" />
+
+</menu>

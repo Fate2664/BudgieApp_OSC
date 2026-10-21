@@ -13,7 +13,7 @@
     <LinearLayout
         android:id="@+id/llHeader"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="65dp"
         android:background="@color/background_header"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -72,122 +72,21 @@
         </LinearLayout>
         <!-- endregion -->
 
-        <!-- region Header Tabs -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/background_header"
-
-            android:gravity="center"
-            android:orientation="horizontal"
-
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <LinearLayout
-                android:id="@+id/tabAccounts"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Accounts"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:translationY="5dp" />
-
-                <View
-                    android:id="@+id/indicatorAccounts"
-                    android:layout_width="120dp"
-                    android:layout_height="4dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/white" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tabBudgets"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Budgets &amp; Goals"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:translationY="5dp" />
-
-                <View
-                    android:id="@+id/indicatorBudgets"
-                    android:layout_width="120dp"
-                    android:layout_height="4dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/white"
-                    android:visibility="invisible" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tabAIChat"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="AI Chat"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:translationY="5dp" />
-
-                <View
-                    android:id="@+id/indicatorAI"
-                    android:layout_width="120dp"
-                    android:layout_height="4dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/white"
-                    android:visibility="invisible" />
-            </LinearLayout>
-
-        </LinearLayout>
-        <!-- endregion -->
     </LinearLayout>
     <!-- endregion -->
 
-    <!-- region Content -->
+    <!-- Floating action options -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/dashboardPager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/llHeader"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-    <!-- endregion -->
+        app:layout_constraintTop_toBottomOf="@id/llHeader"
+        app:layout_constraintVertical_bias="1.0" />
 
-    <!-- Floating action options -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAddExpense"
         android:layout_width="wrap_content"
@@ -238,10 +137,30 @@
         android:contentDescription="Dashboard actions"
         android:src="@drawable/baseline_add_24"
         app:fabCustomSize="64dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/dashboardBottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:maxImageSize="30dp"
         app:tint="@color/white" />
+
+    <!-- Footer -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/dashboardBottomNav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        app:itemPaddingTop="6dp"
+        app:itemPaddingBottom="2dp"
+        android:background="@color/background_header"
+        app:itemActiveIndicatorStyle="@style/DashboardNavIndicator"
+        app:itemHorizontalTranslationEnabled="false"
+        app:itemIconSize="24dp"
+        app:itemIconTint="@color/dashboard_nav_item"
+        app:itemTextColor="@color/dashboard_nav_item"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/dashboard_bottom_nav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
