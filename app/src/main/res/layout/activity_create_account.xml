@@ -119,35 +119,19 @@
     
     <TextView
         android:id="@+id/txtAlreadyHaveAccount"
-        android:layout_width="0dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="Already have an account?"
+        android:text="Already have an account? Login now."
         android:textColor="@color/budget_blue"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:clickable="true"
         android:layout_marginTop="20dp"
         app:layout_constraintTop_toBottomOf="@id/btnCreateAccount"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:textAlignment="center"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
 
-        android:text="Login"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="21sp"
-        app:backgroundTint="@color/budget_blue"
-        app:cornerRadius="14dp"
-        android:includeFontPadding="false"
-        android:layout_marginTop="10dp"
-        app:icon="@drawable/baseline_arrow_forward_ios_24"
-        app:iconGravity="textEnd"
-        app:layout_constraintTop_toBottomOf="@id/txtAlreadyHaveAccount"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

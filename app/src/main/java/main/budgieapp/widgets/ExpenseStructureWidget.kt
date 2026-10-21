@@ -232,11 +232,12 @@ class ExpenseStructureWidget(private val rootView: View) {
         if (categories.isEmpty()) {
             chart.centerText = ""
             chart.setNoDataText(
-                "Net total: ${formatMoney(incomeCents - expenseCents)}\n" +
                 if (includeIncomeCheckbox.isChecked) {
-                    "No income or expenses in this period"
+                    "Net total: ${formatMoney(incomeCents - expenseCents)}\n" +
+                        "No income or expenses in this period"
                 } else {
-                    "No expenses in this period"
+                    "Expense total: ${formatMoney(expenseCents)}\n" +
+                        "No expenses in this period"
                 }
             )
             chart.clear()
@@ -297,7 +298,11 @@ class ExpenseStructureWidget(private val rootView: View) {
     }
 
     private fun showTotal() {
-        chart.centerText = "Net total\n${formatMoney(incomeCents - expenseCents)}"
+        chart.centerText = if (includeIncomeCheckbox.isChecked) {
+            "Net total\n${formatMoney(incomeCents - expenseCents)}"
+        } else {
+            "Expense total\n${formatMoney(expenseCents)}"
+        }
 
         chart.invalidate()
     }

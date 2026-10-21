@@ -1,9 +1,12 @@
 package main.budgieapp
 
 import android.content.Intent
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Patterns
+import android.view.MotionEvent
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +19,7 @@ import java.util.Locale
 
 class CreateAccountActivity : AppCompatActivity() {
 
-    private val auth : FirebaseAuth by lazy {
+    private val auth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
 
@@ -36,29 +39,51 @@ class CreateAccountActivity : AppCompatActivity() {
             createAccount()
         }
 
-        findViewById<MaterialButton>(R.id.btnLogin).setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
+        val loginLink = findViewById<TextView>(R.id.txtAlreadyHaveAccount)
+        val originalFlags = loginLink.paintFlags
+
+        loginLink.setOnTouchListener { view, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN ->
+                    loginLink.paintFlags = originalFlags or
+                            Paint.UNDERLINE_TEXT_FLAG
+
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
+                    loginLink.paintFlags = originalFlags
+            }
+            view.invalidate()
+            false
         }
+
+        findViewById<TextView>(R.id.txtAlreadyHaveAccount).setOnClickListener {
+            if (!isSaving) {
+                startActivity(Intent(this, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                })
+                finish()
+            }
+        }
+
     }
 
-    private fun createAccount(){
+    private fun createAccount() {
         if (isSaving) return
 
         val emailInput = findViewById<EditText>(R.id.etxtEmail)
         val passwordInput = findViewById<EditText>(R.id.etxtPassword)
         val createButton = findViewById<MaterialButton>(R.id.btnCreateAccount)
-        val loginButton = findViewById<MaterialButton>(R.id.btnLogin)
+        val loginLink = findViewById<TextView>(R.id.txtAlreadyHaveAccount)
 
         val email = emailInput.text.toString().trim().lowercase(Locale.ROOT)
         val password = passwordInput.text.toString()
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailInput.error = "Enter a valid email address"
             emailInput.requestFocus()
             return
         }
 
-        if (password.length < 6){
+        if (password.length < 6) {
             passwordInput.error = "Password must be at least 6 characters long"
             passwordInput.requestFocus()
             return
@@ -66,7 +91,7 @@ class CreateAccountActivity : AppCompatActivity() {
 
         isSaving = true
         createButton.isEnabled = false
-        loginButton.isEnabled = false
+        loginLink.isEnabled = false
         emailInput.isEnabled = false
         passwordInput.isEnabled = false
 
@@ -77,20 +102,25 @@ class CreateAccountActivity : AppCompatActivity() {
 
                 isSaving = false
                 createButton.isEnabled = true
-                loginButton.isEnabled = true
+                loginLink.isEnabled = true
                 emailInput.isEnabled = true
                 passwordInput.isEnabled = true
 
-                if (task.isSuccessful){
+                if (task.isSuccessful) {
                     passwordInput.text.clear()
-                    Toast.makeText(this@CreateAccountActivity, "Account created", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        this@CreateAccountActivity,
+                        "Account created",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                     startActivity(
                         Intent(
                             this@CreateAccountActivity,
                             DashboardActivity::class.java
                         ).apply {
-                            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         }
                     )
                     finish()

@@ -1,9 +1,12 @@
 package main.budgieapp
 
 import android.content.Intent
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Patterns
+import android.view.MotionEvent
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -39,9 +42,29 @@ class LoginActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        val createAccountLink = findViewById<TextView>(R.id.txtCreateAccount)
+        val originalFlags = createAccountLink.paintFlags
+
+        createAccountLink.setOnTouchListener { view, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> createAccountLink.paintFlags =
+                    originalFlags or Paint.UNDERLINE_TEXT_FLAG
+
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> createAccountLink.paintFlags =
+                    originalFlags
+            }
+            view.invalidate()
+            false
+        }
 
         findViewById<MaterialButton>(R.id.btnLogin).setOnClickListener {
             login()
+        }
+
+        findViewById<TextView>(R.id.txtCreateAccount).setOnClickListener {
+            if (!isLoggingIn) {
+                startActivity(Intent(this, CreateAccountActivity::class.java))
+            }
         }
     }
 
@@ -96,7 +119,7 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun openDashboard(){
+    private fun openDashboard() {
         startActivity(Intent(this, DashboardActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         })
