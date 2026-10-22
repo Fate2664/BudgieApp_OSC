@@ -76,7 +76,7 @@ class BudgetRepo private constructor(private val uid: String) {
             } else {
                 operation.set(
                     reference,
-                    budget.copy(id = reference.id)
+                    budget.copy(id = reference.id, createdAtMillis = System.currentTimeMillis())
                 )
                 true
             }

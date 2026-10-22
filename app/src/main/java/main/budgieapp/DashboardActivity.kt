@@ -26,6 +26,7 @@ import main.budgieapp.widgets.IncomeVsExpensesWidget
 import java.time.ZoneId
 import main.budgieapp.data.TransactionEntity
 import main.budgieapp.data.TransactionRepo
+import main.budgieapp.widgets.AchievementProgressWidget
 import main.budgieapp.widgets.SummaryPieWidget
 
 class DashboardActivity : AppCompatActivity() {
@@ -111,6 +112,7 @@ class DashboardActivity : AppCompatActivity() {
             },
             onBudgetsCreated = { page ->
                 budgetsPage = page
+                AchievementProgressWidget.bindNavigation(page.findViewById<View>(R.id.achievementsWidget))
                 refreshBudgetsPage()
             },
             onAIChatCreated = { page ->
@@ -219,6 +221,10 @@ class DashboardActivity : AppCompatActivity() {
                 GoalsWidget.refresh(
                     page.findViewById<View>(R.id.goalsWidget)
                 )
+            }
+
+            launch {
+                AchievementProgressWidget.refresh(page.findViewById<View>(R.id.achievementsWidget))
             }
         }
     }

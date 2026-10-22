@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_cream"
+    tools:context=".AchievementsActivity">
+
+    <!-- region Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:background="@color/background_header"
+        android:paddingHorizontal="2dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Go back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_arrow_back_24"
+            app:tint="@color/white" />
+        <TextView
+            android:id="@+id/txtHeaderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Achievements"
+            android:textColor="@color/white"
+            android:textSize="25sp"
+            android:textStyle="bold"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- endregion -->
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="7dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/txtAchievementsHeading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:accessibilityHeading="true"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="@string/achievements_heading"
+                android:textColor="@color/achievement_text"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtAchievementsCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp"
+                android:gravity="center"
+                android:text="@string/achievements_preview_count"
+                android:textColor="@color/achievement_secondary_text"
+                android:textSize="14sp" />
+
+            <GridLayout
+                android:id="@+id/achievementsGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alignmentMode="alignMargins"
+                android:columnCount="2"
+                android:rowCount="3">
+
+                <!-- region Achievements -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardFirstStep"
+                    style="@style/AchievementCard">
+
+                    <LinearLayout style="@style/AchievementCardBody">
+
+                        <ImageView
+                            android:id="@+id/imgFirstStep"
+                            style="@style/AchievementBadge"
+                            android:backgroundTint="#BFE8D5"
+                            app:srcCompat="@drawable/baseline_medal_24"
+                            app:tint="@color/achievement_earned" />
+
+                        <TextView
+                            style="@style/AchievementTitle"
+                            android:text="@string/achievement_first_step" />
+
+                        <TextView
+                            style="@style/AchievementDescription"
+                            android:text="@string/achievement_first_step_description" />
+
+                        <LinearLayout
+                            android:id="@+id/statusFirstStep"
+                            style="@style/AchievementStatus">
+
+                            <ImageView
+                                android:id="@+id/iconFirstStepStatus"
+                                style="@style/AchievementStatusIcon"
+                                app:srcCompat="@drawable/ic_achievement_check_circle"
+                                app:tint="@color/achievement_earned" />
+
+                            <TextView
+                                android:id="@+id/txtFirstStepStatus"
+                                style="@style/AchievementStatusText" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardHalfwayThere"
+                    style="@style/AchievementCard">
+
+                    <LinearLayout style="@style/AchievementCardBody">
+
+                        <ImageView
+                            android:id="@+id/imgHalfwayThere"
+                            style="@style/AchievementBadge"
+                            android:backgroundTint="#38F0D600"
+                            app:srcCompat="@drawable/baseline_auto_awesome_24"
+                            app:tint="#BD8500" />
+
+                        <TextView
+                            style="@style/AchievementTitle"
+                            android:text="@string/achievement_halfway" />
+
+                        <TextView
+                            style="@style/AchievementDescription"
+                            android:text="@string/achievement_halfway_description" />
+
+                        <LinearLayout
+                            android:id="@+id/statusHalfwayThere"
+                            style="@style/AchievementStatus">
+
+                            <ImageView
+                                android:id="@+id/iconHalfwayThereStatus"
+                                style="@style/AchievementStatusIcon"
+                                app:srcCompat="@drawable/ic_achievement_check_circle"
+                                app:tint="@color/achievement_earned" />
+
+                            <TextView
+                                android:id="@+id/txtHalfwayThereStatus"
+                                style="@style/AchievementStatusText" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardGoalAchieved"
+                    style="@style/AchievementCard">
+
+                    <LinearLayout style="@style/AchievementCardBody">
+
+                        <ImageView
+                            android:id="@+id/imgGoalAchieved"
+                            style="@style/AchievementBadge"
+                            android:backgroundTint="#E7D2FA"
+                            app:srcCompat="@drawable/ic_achievement_trophy"
+                            app:tint="#7A28B9" />
+
+                        <TextView
+                            style="@style/AchievementTitle"
+                            android:text="@string/achievement_goal_achieved" />
+
+                        <TextView
+                            style="@style/AchievementDescription"
+                            android:text="@string/achievement_goal_achieved_description" />
+
+                        <LinearLayout
+                            android:id="@+id/statusGoalAchieved"
+                            style="@style/AchievementStatus">
+
+                            <ImageView
+                                android:id="@+id/iconGoalAchievedStatus"
+                                style="@style/AchievementStatusIcon"
+                                app:srcCompat="@drawable/ic_achievement_check_circle"
+                                app:tint="@color/achievement_earned" />
+
+                            <TextView
+                                android:id="@+id/txtGoalAchievedStatus"
+                                style="@style/AchievementStatusText" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardConsistentSaver"
+                    style="@style/AchievementCard"
+                    app:cardBackgroundColor="#FAFAF8">
+
+                    <LinearLayout style="@style/AchievementCardBody">
+
+                        <ImageView
+                            android:id="@+id/imgConsistentSaver"
+                            style="@style/AchievementBadge"
+                            android:backgroundTint="#E6E6E8"
+                            app:srcCompat="@drawable/baseline_streak_24"
+                            app:tint="@color/achievement_locked" />
+
+                        <TextView
+                            style="@style/AchievementTitle"
+                            android:text="@string/achievement_consistent_saver" />
+
+                        <TextView
+                            style="@style/AchievementDescription"
+                            android:text="@string/achievement_consistent_saver_description" />
+
+                        <LinearLayout
+                            android:id="@+id/statusConsistentSaver"
+                            style="@style/AchievementStatusLocked">
+
+                            <ImageView
+                                android:id="@+id/iconConsistentSaverStatus"
+                                style="@style/AchievementStatusIcon"
+                                app:srcCompat="@drawable/ic_achievement_lock"
+                                app:tint="@color/achievement_locked" />
+
+                            <TextView
+                                android:id="@+id/txtConsistentSaverStatus"
+                                style="@style/AchievementStatusTextLocked" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardWithinBudget"
+                    style="@style/AchievementCard"
+                    app:cardBackgroundColor="#FAFAF8">
+
+                    <LinearLayout style="@style/AchievementCardBody">
+
+                        <ImageView
+                            android:id="@+id/imgWithinBudget"
+                            style="@style/AchievementBadge"
+                            android:backgroundTint="#E6E6E8"
+                            app:srcCompat="@drawable/baseline_bar_chart_24"
+                            app:tint="@color/achievement_locked" />
+
+                        <TextView
+                            style="@style/AchievementTitle"
+                            android:text="@string/achievement_within_budget" />
+
+                        <TextView
+                            style="@style/AchievementDescription"
+                            android:text="@string/achievement_within_budget_description" />
+
+                        <LinearLayout
+                            android:id="@+id/statusWithinBudget"
+                            style="@style/AchievementStatusLocked">
+
+                            <ImageView
+                                android:id="@+id/iconWithinBudgetStatus"
+                                style="@style/AchievementStatusIcon"
+                                app:srcCompat="@drawable/ic_achievement_lock"
+                                app:tint="@color/achievement_locked" />
+
+                            <TextView
+                                android:id="@+id/txtWithinBudgetStatus"
+                                style="@style/AchievementStatusTextLocked" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardGoalExplorer"
+                    style="@style/AchievementCard"
+                    app:cardBackgroundColor="#FAFAF8">
+
+                    <LinearLayout style="@style/AchievementCardBody">
+
+                        <ImageView
+                            android:id="@+id/imgGoalExplorer"
+                            style="@style/AchievementBadge"
+                            android:backgroundTint="#E6E6E8"
+                            app:srcCompat="@drawable/baseline_target_24"
+                            app:tint="@color/achievement_locked" />
+
+                        <TextView
+                            style="@style/AchievementTitle"
+                            android:text="@string/achievement_goal_explorer" />
+
+                        <TextView
+                            style="@style/AchievementDescription"
+                            android:text="@string/achievement_goal_explorer_description" />
+
+                        <LinearLayout
+                            android:id="@+id/statusGoalExplorer"
+                            style="@style/AchievementStatusLocked">
+
+                            <ImageView
+                                android:id="@+id/iconGoalExplorerStatus"
+                                style="@style/AchievementStatusIcon"
+                                app:srcCompat="@drawable/ic_achievement_lock"
+                                app:tint="@color/achievement_locked" />
+
+                            <TextView
+                                android:id="@+id/txtGoalExplorerStatus"
+                                style="@style/AchievementStatusTextLocked" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- endregion -->
+
+            </GridLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

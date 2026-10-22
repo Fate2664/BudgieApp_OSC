@@ -34,4 +34,5 @@
     <color name="Teal">#13AB9A</color>
     <color name="blue">#419AFF</color>
     <color name="transparent_teal">#1D03CAB8</color>
+    <color name="light_teal">#7203CAB8</color>
 </resources>

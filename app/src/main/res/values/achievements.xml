@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="achievements_count">%1$d of %2$d earned</string>
+    <string name="achievements_loading">Loading achievements…</string>
+    <string name="achievements_load_error">Could not load achievements. Please reopen this page to retry.</string>
+    <string name="achievements_widget_error">Could not load achievements</string>
+
+    <plurals name="achievements_earned_count">
+        <item quantity="one">%d achievement earned</item>
+        <item quantity="other">%d achievements earned</item>
+    </plurals>
+
+    <color name="achievement_text">#171831</color>
+    <color name="achievement_secondary_text">#555563</color>
+    <color name="achievement_earned">#087F68</color>
+    <color name="achievement_locked">#7D7D87</color>
+
+    <string name="achievements_heading">Celebrate your progress</string>
+    <string name="achievements_preview_count">3 of 6 earned</string>
+    <string name="achievement_first_step">First Step</string>
+    <string name="achievement_first_step_description">Create your first budget.</string>
+    <string name="achievement_halfway">Halfway There</string>
+    <string name="achievement_halfway_description" formatted="false">Save 50% towards a goal.</string>
+    <string name="achievement_goal_achieved">Goal Achieved</string>
+    <string name="achievement_goal_achieved_description" formatted="false">Reach 100% of a savings goal.</string>
+    <string name="achievement_consistent_saver">Consistent Saver</string>
+    <string name="achievement_consistent_saver_description">Save money for 3 months in a row.</string>
+    <string name="achievement_within_budget">Within Budget</string>
+    <string name="achievement_within_budget_description">Stay within your monthly budget for 3 months.</string>
+    <string name="achievement_goal_explorer">Goal Explorer</string>
+    <string name="achievement_goal_explorer_description">Create 3 different savings goals.</string>
+    <string name="achievement_earned">Earned</string>
+    <string name="achievement_locked">Locked</string>
+
+    <style name="AchievementCard" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_gravity">fill</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="cardBackgroundColor">#FFFEFB</item>
+        <item name="cardCornerRadius">14dp</item>
+        <item name="cardElevation">1dp</item>
+        <item name="strokeColor">#DFDFD9</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="AchievementCardBody" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:padding">6dp</item>
+        <item name="android:paddingTop">10dp</item>
+    </style>
+
+    <style name="AchievementBadge" parent="">
+        <item name="android:layout_width">58dp</item>
+        <item name="android:layout_height">58dp</item>
+        <item name="android:background">@drawable/achievement_badge_circle</item>
+        <item name="android:padding">13dp</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="AchievementTitle" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/achievement_text</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AchievementDescription" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:gravity">top|center_horizontal</item>
+        <item name="android:minLines">3</item>
+        <item name="android:textColor">@color/achievement_secondary_text</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="AchievementStatus" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">34dp</item>
+        <item name="android:padding">6dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/achievement_status_background</item>
+        <item name="android:backgroundTint">#EAF5E9</item>
+    </style>
+
+    <style name="AchievementStatusLocked" parent="AchievementStatus">
+        <item name="android:backgroundTint">#EFEFF0</item>
+    </style>
+
+    <style name="AchievementStatusIcon" parent="">
+        <item name="android:layout_width">18dp</item>
+        <item name="android:layout_height">18dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="AchievementStatusText" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">@string/achievement_earned</item>
+        <item name="android:textColor">@color/achievement_earned</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="AchievementStatusTextLocked" parent="AchievementStatusText">
+        <item name="android:text">@string/achievement_locked</item>
+        <item name="android:textColor">@color/achievement_secondary_text</item>
+    </style>
+</resources>

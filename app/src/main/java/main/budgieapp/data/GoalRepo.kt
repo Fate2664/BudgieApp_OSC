@@ -3,6 +3,7 @@ package main.budgieapp.data
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.Source
 import kotlinx.coroutines.tasks.await
 
@@ -14,13 +15,13 @@ class GoalRepo private constructor(private val uid: String) {
         .document(uid)
         .collection("goals")
 
-    private fun requireCurrentUser(){
+    private fun requireCurrentUser() {
         check(auth.currentUser?.uid == uid) {
             "The signed-in account has changed"
         }
     }
 
-    suspend fun getAll(): List<GoalEntity>{
+    suspend fun getAll(): List<GoalEntity> {
         requireCurrentUser()
 
         val snapshot = goals.orderBy("targetDateMillis", Query.Direction.ASCENDING)
@@ -29,8 +30,8 @@ class GoalRepo private constructor(private val uid: String) {
 
         requireCurrentUser()
 
-        return snapshot.documents.map{ document ->
-            requireNotNull(document.toObject(GoalEntity::class.java)){
+        return snapshot.documents.map { document ->
+            requireNotNull(document.toObject(GoalEntity::class.java)) {
                 "Could not read goal ${document.id}"
             }.copy(id = document.id)
         }
@@ -47,7 +48,7 @@ class GoalRepo private constructor(private val uid: String) {
         return document.toObject(GoalEntity::class.java)?.copy(id = document.id)
     }
 
-    suspend fun insertIfAbsent(goal: GoalEntity): Boolean{
+    suspend fun insertIfAbsent(goal: GoalEntity): Boolean {
         requireCurrentUser()
         require('/' !in goal.id)
         require(goal.name.isNotBlank())
@@ -57,14 +58,28 @@ class GoalRepo private constructor(private val uid: String) {
         require(goal.iconKey.isNotBlank())
 
         val reference = goals.document(goal.id)
-        val created = firestore.runTransaction {
-            operation ->
-            val existing = operation.get(reference)
+        val tracking = firestore
+            .collection("users")
+            .document(uid)
+            .collection("achievementTracking")
+            .document("summary")
 
-            if (existing.exists()){
+        val created = firestore.runTransaction { operation ->
+            requireCurrentUser()
+
+            val existing = operation.get(reference)
+            if (existing.exists()) {
                 false
-            }else{
+            } else {
+                val summary = operation.get(tracking)
+                val goalsCreated = summary.getLong("goalsCreated") ?: 0L
+
                 operation.set(reference, goal)
+                operation.set(
+                    tracking,
+                    mapOf("goalsCreated" to goalsCreated + 1L),
+                    SetOptions.merge()
+                )
                 true
             }
         }.await()
@@ -72,7 +87,7 @@ class GoalRepo private constructor(private val uid: String) {
         return created
     }
 
-    suspend fun deleteById(id: String){
+    suspend fun deleteById(id: String) {
         requireCurrentUser()
         require(id.isNotBlank())
         require('/' !in id)
@@ -83,7 +98,7 @@ class GoalRepo private constructor(private val uid: String) {
 
     companion object {
         fun forCurrentUser(): GoalRepo {
-            val uid = requireNotNull(FirebaseAuth.getInstance().currentUser){
+            val uid = requireNotNull(FirebaseAuth.getInstance().currentUser) {
                 "Sign in before accessing goals"
             }.uid
             return GoalRepo(uid)
