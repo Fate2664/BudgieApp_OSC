@@ -77,7 +77,7 @@ Budgie was created to:
 
 | Transactions | Cash Flow | AI Assistant |
 |:---:|:---:|:---:|
-| <img src="docs/images/transactions.png" width="200"/> | <img src="docs/images/cash-flow.png" width="200"/> | <img src="docs/images/ai-assistant.png" width="200"/> |
+| <img src="docs/images/transactions.png" width="200"/> | <img src="docs/images/dashboard-2.png" width="200"/> | <img src="docs/images/ai-assistant.png" width="200"/> |
 
 ---
 
