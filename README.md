@@ -110,8 +110,8 @@ We began with mock-ups of every screen and a navigation flow before writing any 
 | Planned (mock-up) | Final (app) |
 |:---:|:---:|
 | <img src="docs/images/mockup-login.png" width="220"/> | <img src="docs/images/login.png" width="220"/> |
-| <img src="docs/images/mockup-home.png" width="220"/> | <img src="docs/images/dashboard-2.png" width="220"/> |
-| <img src="docs/images/mockup-graphs.png" width="220"/> | <img src="docs/images/graphs.png" width="220"/> |
+| <img src="docs/images/mockup-home.png" width="220"/> | <img src="docs/images/dashboard.png" width="220"/> |
+| <img src="docs/images/mockup-graphs.png" width="220"/> | <img src="docs/images/dashboard-2.png" width="220"/> |
 
 ---
 
