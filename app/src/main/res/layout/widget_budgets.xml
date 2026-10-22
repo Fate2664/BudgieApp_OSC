@@ -58,7 +58,7 @@
 
             <TextView
                 android:id="@+id/txtBudgetRemaining"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="10dp"
@@ -69,7 +69,7 @@
 
             <TextView
                 android:id="@+id/txtRemaining"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
                 android:text="remaining"
@@ -127,7 +127,7 @@
             android:layout_marginTop="12dp"
             android:layout_gravity="center"
             android:visibility="gone"
-            app:cardBackgroundColor="#1D03CAB8"
+            app:cardBackgroundColor="@color/transparent_teal"
             app:cardCornerRadius="30dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
@@ -171,7 +171,7 @@
                     android:textColor="@color/darkTeal"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    tools:text="2 months within budget" />
+                    tools:text="2 months streak within budget." />
 
             </LinearLayout>
 

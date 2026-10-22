@@ -2,6 +2,8 @@ package main.budgieapp.widgets
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -90,6 +92,14 @@ object GoalsWidget {
                 } else {
                     BigDecimal.ZERO
                 }
+
+                renderMilestones(
+                    row = row,
+                    savedCents = totalSavedCents,
+                    targetCents = goal.targetAmountCents,
+                    goalColor = goal.color,
+                    currency = currency
+                )
 
                 row.findViewById<TextView>(R.id.txtGoalName).text = goal.name
                 row.findViewById<TextView>(R.id.txtGoalTargetDate).text =
@@ -189,6 +199,98 @@ object GoalsWidget {
         } catch (error: Exception) {
             Log.e("GoalsWidget", "Could not load goals", error)
             showMessage("Could not load goals. Please try again.")
+        }
+    }
+
+    private fun renderMilestones(
+        row: View,
+        savedCents: BigDecimal,
+        targetCents: Long,
+        goalColor: Int,
+        currency: NumberFormat
+    ) {
+        val milestones = listOf(
+            25 to row.findViewById<TextView>(R.id.milestone25),
+            50 to row.findViewById<TextView>(R.id.milestone50),
+            75 to row.findViewById<TextView>(R.id.milestone75),
+            100 to row.findViewById<TextView>(R.id.milestone100)
+        )
+
+        val message = row.findViewById<TextView>(R.id.txtGoalMilestoneContext)
+        val fill = row.findViewById<View>(R.id.goalMilestoneFill)
+        val validTarget = targetCents > 0L
+        val saved = savedCents.max(BigDecimal.ZERO)
+        var target = BigDecimal.valueOf(targetCents)
+
+        fun requireCents(percent: Int): BigDecimal =
+            target.multiply(
+                BigDecimal
+                    .valueOf(percent.toLong())
+            )
+                .divide(BigDecimal.valueOf(100), 0, RoundingMode.CEILING)
+
+        val nextIndex = if (validTarget) {
+            milestones.indexOfFirst { (percent, _) -> saved < requireCents(percent) }
+        } else {
+            -1
+        }
+
+        val density = row.resources.displayMetrics.density
+        val strokeWidth = (2 * density).toInt().coerceAtLeast(1)
+        val grey = Color.rgb(180, 180, 190)
+
+        milestones.forEachIndexed { index, (percent, circle) ->
+            val reached = validTarget && saved >= requireCents(percent)
+            val next = validTarget && index == nextIndex
+
+            circle.background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(if (reached) goalColor else Color.WHITE)
+                setStroke(strokeWidth, if (reached || next) goalColor else grey)
+            }
+
+            circle.text = if (reached) "\u2713" else ""
+            circle.setTextColor(Color.WHITE)
+            circle.contentDescription = when {
+                reached -> "$percent percent milestone reached"
+                next -> "$percent percent milestone next"
+                else -> "$percent percent milestone"
+            }
+        }
+
+        message.text = when {
+            !validTarget -> "Set a target amount to track milestones"
+            nextIndex == -1 -> "Goal reached!"
+            else -> {
+                val nextPercentage = milestones[nextIndex].first
+                val needed = requireCents(nextPercentage)
+                    .subtract(saved)
+                    .max(BigDecimal.ZERO)
+                val destination = when (nextPercentage) {
+                    50 -> "halfway"
+                    100 -> "your goal"
+                    else -> "$nextPercentage%"
+                }
+
+                "${currency.format(needed.movePointLeft(2))} until $destination"
+            }
+        }
+
+        fill.setBackgroundColor(goalColor)
+        fill.post {
+            val firstCircle = milestones.first().second
+            val endIndex = when {
+                !validTarget -> 0
+                nextIndex == -1 -> milestones.lastIndex
+                else -> nextIndex
+            }
+            val endCircle = milestones[endIndex].second
+            val startX = firstCircle.left + firstCircle.width / 2f
+            val endX = endCircle.left + endCircle.width / 2f
+
+            fill.layoutParams = fill.layoutParams.apply {
+                width = (endX - startX).toInt().coerceAtLeast(0)
+            }
         }
     }
 }

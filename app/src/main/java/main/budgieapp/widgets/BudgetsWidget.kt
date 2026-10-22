@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -33,6 +34,7 @@ import java.util.Locale
 object BudgetsWidget {
 
     private val periodOptions = listOf("Daily", "Weekly", "Monthly", "Yearly")
+    private const val STREAK_THRESHOLD_MONTHS = 2
     private fun periodStart(period: String, today: LocalDate): LocalDate = when (period) {
         "Daily" -> today
         "Weekly" -> today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -78,9 +80,12 @@ object BudgetsWidget {
     suspend fun refresh(root: View) {
         val container = root.findViewById<LinearLayout>(R.id.budgetListContainer)
         val remainingText = root.findViewById<TextView>(R.id.txtBudgetRemaining)
+        val remainingLabel = root.findViewById<TextView>(R.id.txtRemaining)
         val spentText = root.findViewById<TextView>(R.id.txtBudgetSpent)
         val percentageText = root.findViewById<TextView>(R.id.txtBudgetPercentage)
         val summaryBar = root.findViewById<ProgressBar>(R.id.progressMonthlyBudget)
+        val streakCard = root.findViewById<MaterialCardView>(R.id.cardBudgetStreak)
+        val streakText = root.findViewById<TextView>(R.id.txtBudgetStreak)
 
         val preferences = root.context.getSharedPreferences("budget_widget", Context.MODE_PRIVATE)
 
@@ -89,13 +94,16 @@ object BudgetsWidget {
             ?: "Monthly"
 
         val timePeriodText = root.findViewById<TextView>(R.id.txtTimePeriod)
-        timePeriodText.text = "${selectedPeriod.uppercase(Locale.ROOT)} BUDGETS"
+        timePeriodText.text = "${selectedPeriod} budgets"
 
-        timePeriodText.setOnClickListener { anchor -> val popup = PopupMenu(root.context, anchor)
-            periodOptions.forEach { period -> popup.menu.add(period).apply {
+        timePeriodText.setOnClickListener { anchor ->
+            val popup = PopupMenu(root.context, anchor)
+            periodOptions.forEach { period ->
+                popup.menu.add(period).apply {
                     isCheckable = true
                     isChecked = period == selectedPeriod
-                    setOnMenuItemClickListener { val owner = root.findViewTreeLifecycleOwner()
+                    setOnMenuItemClickListener {
+                        val owner = root.findViewTreeLifecycleOwner()
                         if (owner != null && period != selectedPeriod) {
                             preferences.edit()
                                 .putString("selected_period", period)
@@ -115,9 +123,12 @@ object BudgetsWidget {
 
         container.removeAllViews()
         remainingText.text = "Loading budgets…"
+        remainingLabel.text = ""
         spentText.text = ""
         percentageText.text = ""
         summaryBar.progress = 0
+        streakCard.visibility = View.GONE
+        streakText.text = ""
 
         try {
             val transactionRepo = TransactionRepo.forCurrentUser()
@@ -246,7 +257,8 @@ object BudgetsWidget {
 
             if (budgets.isEmpty()) {
                 container.addView(TextView(root.context).apply {
-                    text = "No ${selectedPeriod.lowercase(Locale.ROOT)} budgets yet. Tap + to create one."
+                    text =
+                        "No ${selectedPeriod.lowercase(Locale.ROOT)} budgets yet. Tap + to create one."
                     setTextColor(root.context.getColor(R.color.soft_black))
                     textSize = 15f
                 })
@@ -254,11 +266,24 @@ object BudgetsWidget {
 
             val remaining = totalLimit.subtract(totalSpent)
 
-            remainingText.text = when {
-                budgets.isEmpty() -> "No ${selectedPeriod.lowercase(Locale.ROOT)} budgets yet"
-                remaining.signum() < 0 -> "${money(remaining.abs())} over limit"
-                else -> "${money(remaining)} remaining"
+            remainingText.text = if (budgets.isEmpty()) {
+                "no budgets yet"
+            } else {
+                money(remaining.abs())
             }
+
+            remainingLabel.text = when {
+                budgets.isEmpty() -> ""
+                remaining.signum() < 0 -> " over limit"
+                else -> "remaining"
+            }
+
+            remainingText.setTextColor(
+                root.context.getColor(
+                    if (remaining.signum() < 0) R.color.light_red
+                    else R.color.darkTeal
+                )
+            )
 
             spentText.text = "${money(totalSpent)} spent of ${money(totalLimit)}"
 
@@ -269,7 +294,7 @@ object BudgetsWidget {
                 val used = totalSpent
                     .multiply(BigDecimal.valueOf(100))
                     .divide(totalLimit, 0, RoundingMode.HALF_UP)
-                "$used% used"
+                "$used%"
             } else {
                 ""
             }
@@ -279,9 +304,26 @@ object BudgetsWidget {
             Log.e("BudgetsWidget", "Could not load budgets", error)
             container.removeAllViews()
             remainingText.text = "Could not load budgets"
+            remainingLabel.text = ""
+            streakCard.visibility = View.GONE
+            streakText.text = ""
             spentText.text = ""
             percentageText.text = ""
             summaryBar.progress = 0
+        }
+    }
+
+    private fun renderBudgetStreak(root: View, selectedPeriod: String, constructiveMonths: Int) {
+        val card = root.findViewById<View>(R.id.cardBudgetStreak)
+        val text = root.findViewById<TextView>(R.id.txtBudgetStreak)
+        val showStreak =
+            selectedPeriod == "Monthly" && constructiveMonths >= STREAK_THRESHOLD_MONTHS
+
+        card.visibility = if (showStreak) View.VISIBLE else View.GONE
+        text.text = if (showStreak) {
+            "$constructiveMonths months streak within budget."
+        } else {
+            ""
         }
     }
 }

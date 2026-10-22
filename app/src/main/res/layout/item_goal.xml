@@ -101,8 +101,8 @@
         style="?android:progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="18dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="75dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
         android:max="100"
         android:progress="71"
         android:progressDrawable="@drawable/custom_progressbar"
@@ -121,6 +121,7 @@
         app:layout_constraintStart_toStartOf="@id/goalProgress"
         app:layout_constraintTop_toBottomOf="@id/goalProgress">
 
+        <!-- Grey Line -->
         <View
             android:layout_width="0dp"
             android:layout_height="2dp"
@@ -131,6 +132,17 @@
             app:layout_constraintEnd_toEndOf="@id/milestone100"
             app:layout_constraintStart_toStartOf="@id/milestone25"
             app:layout_constraintTop_toTopOf="@id/milestone25" />
+
+        <!-- Colored line -->
+        <View
+            android:id="@+id/goalMilestoneFill"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/Teal"
+            app:layout_constraintStart_toStartOf="@id/milestone25"
+            app:layout_constraintTop_toTopOf="@id/milestone25"
+            app:layout_constraintBottom_toBottomOf="@id/milestone25" />
 
         <TextView
             android:id="@+id/milestone25"
