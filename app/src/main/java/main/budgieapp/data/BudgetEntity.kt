@@ -7,5 +7,7 @@ data class BudgetEntity(
     val amountCents: Long = 0L,
     val categoryId: String = "",
     val period: String = "",
-    val createdAtMillis: Long = 0L
+    val createdAtMillis: Long = 0L,
+    val categoryName: String = "",
+    val categoryColor: Int = 0
 )

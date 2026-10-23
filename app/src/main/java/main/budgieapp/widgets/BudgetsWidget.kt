@@ -58,14 +58,22 @@ object BudgetsWidget {
     }
 
     private fun loadCategoriesById(context: Context): Map<String, Category> {
+        // Defaults remain available even on a fresh installation.
+        val defaults = listOf(
+            Category("food", "Food", context.getColor(R.color.category_red)),
+            Category("transport", "Transport", context.getColor(R.color.category_blue)),
+            Category("shopping", "Shopping", context.getColor(R.color.category_purple)),
+            Category("bills", "Bills", context.getColor(R.color.category_orange))
+        ).associateBy { it.id }
         val savedJson = context
             .getSharedPreferences("categories", Context.MODE_PRIVATE)
-            .getString("categories_json", null) ?: return emptyMap()
+            .getString("categories_json", null) ?: return defaults
 
         return try {
             val array = JSONArray(savedJson)
 
             buildMap {
+                putAll(defaults)
                 for (index in 0 until array.length()) {
                     val item = array.getJSONObject(index)
                     val category = Category(
@@ -78,7 +86,7 @@ object BudgetsWidget {
             }
         } catch (error: JSONException) {
             Log.e("BudgetsWidget", "Could not load category details", error)
-            emptyMap()
+            defaults
         }
     }
 
@@ -155,8 +163,20 @@ object BudgetsWidget {
 
             for (budget in budgets) {
                 val category = categoriesById[budget.categoryId]
-                val categoryName = category?.name ?: "Unknown category"
-                val categoryColor = category?.color ?: root.context.getColor(R.color.budget_blue)
+                val previousExpense = expenses.asSequence()
+                    .filter { it.categoryId == budget.categoryId && it.categoryName.isNotBlank() }
+                    .maxByOrNull { it.dateTimeMillis }
+                // Firebase snapshots take precedence over device-local preferences.
+                val categoryName = budget.categoryName.takeIf { it.isNotBlank() }
+                    ?: category?.name
+                    ?: previousExpense?.categoryName
+                    ?: "Unknown category"
+                val categoryColor = if (budget.categoryName.isNotBlank()) {
+                    budget.categoryColor
+                } else {
+                    category?.color ?: previousExpense?.categoryColor
+                        ?: root.context.getColor(R.color.budget_blue)
+                }
                 val startMillis = periodStart(budget.period, today)
                     .atStartOfDay(zone)
                     .toInstant()

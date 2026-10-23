@@ -118,6 +118,8 @@ class AddBudgetActivity : AppCompatActivity() {
             name = name,
             amountCents = amountCents,
             categoryId = category.id,
+            categoryName = category.name,
+            categoryColor = category.color,
             period = period
         )
 
