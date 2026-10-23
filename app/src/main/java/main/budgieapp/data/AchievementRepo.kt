@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.Source
 import com.google.rpc.BadRequest
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.async
@@ -78,8 +79,17 @@ class AchievementRepo private constructor(private val uid: String) {
         awaitClose { registration.remove() }
     }
 
-    // Claim before display to prevent repeats across devices and app restarts.
-    suspend fun claimNotification(id: String): Boolean {
+    suspend fun isNotificationPending(id: String): Boolean {
+        require(id in ALL_IDS)
+        requireCurrentUser()
+        val snapshot = achievements.document(id).get(Source.SERVER).await()
+        requireCurrentUser()
+        return snapshot.getBoolean("earned") == true &&
+            snapshot.getBoolean("notificationShown") == false
+    }
+
+    // Acknowledge only after display so lifecycle cancellation cannot lose a popup.
+    suspend fun markNotificationShown(id: String): Boolean {
         require(id in ALL_IDS)
         requireCurrentUser()
         val claimed = firestore.runTransaction { operation ->

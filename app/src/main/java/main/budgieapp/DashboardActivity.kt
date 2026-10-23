@@ -247,9 +247,24 @@ class DashboardActivity : AppCompatActivity() {
                     ?: return@repeatOnLifecycle
                 try {
                     val repo = AchievementRepo.forCurrentUser()
-                    repo.refreshAndGetEarned(forceRefresh = true)
+                    val earned = repo.refreshAndGetEarned(forceRefresh = true)
+                    budgetsPage?.let { page ->
+                        AchievementProgressWidget.showEarned(
+                            page.findViewById(R.id.achievementsWidget), earned
+                        )
+                    }
                     repo.observePendingNotifications().collect { pending ->
                         if (FirebaseAuth.getInstance().currentUser?.uid == uid) {
+                            if (pending.isNotEmpty()) {
+                                // Pending IDs are already confirmed by the server listener.
+                                // Avoid another full calculation before displaying the popup.
+                                val updatedEarned = (repo.getCachedEarned() ?: earned) + pending
+                                budgetsPage?.let { page ->
+                                    AchievementProgressWidget.showEarned(
+                                        page.findViewById(R.id.achievementsWidget), updatedEarned
+                                    )
+                                }
+                            }
                             achievementPopup.show(uid, pending)
                         }
                     }

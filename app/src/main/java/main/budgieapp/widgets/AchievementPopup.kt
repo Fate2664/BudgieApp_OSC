@@ -42,11 +42,12 @@ class AchievementPopup(private val root: ConstraintLayout) {
                 else -> R.string.achievement_goal_explorer to R.string.achievement_goal_explorer_description
             }
 
-            if (!repo.claimNotification(id)) continue
+            if (!repo.isNotificationPending(id)) continue
             showCard(
                 title = context.getString(title),
                 description = context.getString(description)
             )
+            repo.markNotificationShown(id)
 
         }
 

@@ -23,28 +23,29 @@ object AchievementProgressWidget {
         }
     }
 
+    fun showEarned(root: View, earned: Set<String>) {
+        root.findViewById<TextView>(R.id.txtAchievementsEarned).text =
+            root.resources.getQuantityString(
+                R.plurals.achievements_earned_count,
+                earned.size,
+                earned.size
+            )
+    }
+
     suspend fun refresh(root: View, onEarnedLoaded: (Set<String>) -> Unit = {}) {
         val count = root.findViewById<TextView>(R.id.txtAchievementsEarned)
         val repo = AchievementRepo.forCurrentUser()
         val cached = repo.getCachedEarned()
 
-        fun showCount(earned: Set<String>){
-            count.text = root.resources.getQuantityString(
-                R.plurals.achievements_earned_count,
-                earned.size,
-                earned.size
-            )
-        }
-
         if (cached != null){
-            showCount(cached)
+            showEarned(root, cached)
         } else {
             count.setText(R.string.achievements_loading)
         }
 
         try {
             val earned = repo.refreshAndGetEarned()
-            showCount(earned)
+            showEarned(root, earned)
             onEarnedLoaded(earned)
         } catch (cancelled: CancellationException) {
             throw cancelled
