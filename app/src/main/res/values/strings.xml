@@ -8,4 +8,7 @@
     <string name="transactions_empty">No transactions of this type yet.</string>
     <string name="transactions_loading">Loading transactions…</string>
     <string name="transactions_load_error">Could not load transactions. Go back and try again.</string>
+    <string name="dashboard_banner_greeting">Good morning</string>
+    <string name="dashboard_banner_greeting_username">Good morning, %1$s</string>
+    <string name="dashboard_banner_subtitle">A fresh start for your finances.</string>
 </resources>

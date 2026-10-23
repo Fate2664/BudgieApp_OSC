@@ -3,21 +3,30 @@ package main.budgieapp
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.setPadding
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -74,6 +83,8 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         ViewCompat.requestApplyInsets(root)
+
+        setupSidebar()
 
         fabDashboardActions = findViewById(R.id.fabDashboardActions)
         fabAddExpense = findViewById(R.id.fabAddExpense)
@@ -165,6 +176,98 @@ class DashboardActivity : AppCompatActivity() {
         fabDashboardActions.visibility = if (pager.currentItem == 2) View.GONE else View.VISIBLE
     }
 
+    private fun setupSidebar() {
+        val drawer = findViewById<DrawerLayout>(R.id.dashboardDrawer)
+        val sidebar = findViewById<NavigationView>(R.id.dashboardSidebar)
+
+        ViewCompat.setOnApplyWindowInsetsListener(sidebar) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            insets
+        }
+        ViewCompat.requestApplyInsets(sidebar)
+
+        val user = FirebaseAuth.getInstance().currentUser
+        val header = sidebar.getHeaderView(0)
+
+        val usernameView = header.findViewById<TextView>(R.id.sidbarName)
+        usernameView.text = "My account"
+        if (user != null) {
+            FirebaseFirestore.getInstance().collection("users")
+                .document(user.uid)
+                .get()
+                .addOnSuccessListener(this) { profile ->
+                    if (FirebaseAuth.getInstance().currentUser?.uid == user.uid) {
+                        usernameView.text = profile.getString("username")
+                            ?.takeIf { it.isNotBlank() } ?: "My account"
+                    }
+                }
+                .addOnFailureListener(this) { error ->
+                    Log.w("DashboardActivity", "Could not load sidebar username", error)
+                }
+        }
+        header.findViewById<TextView>(R.id.sidebarEmail).text = user?.email.orEmpty()
+        findViewById<View>(R.id.btnMenu).setOnClickListener {
+            if (actionsOpen) closeActionMenu()
+            drawer.openDrawer(GravityCompat.START)
+        }
+
+        sidebar.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.sidebarSettings -> {
+                    drawer.closeDrawer(GravityCompat.START)
+                    startActivity(Intent(this, SettingsMenuActivity::class.java))
+                    true
+                }
+
+                R.id.sidebarSignOut -> {
+                    drawer.closeDrawer(GravityCompat.START)
+                    confirmSignOut()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        val drawerBackCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                drawer.closeDrawer(GravityCompat.START)
+            }
+        }
+
+        onBackPressedDispatcher.addCallback(this, drawerBackCallback)
+        drawer.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                drawerBackCallback.isEnabled = slideOffset > 0f
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                drawerBackCallback.isEnabled = true
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                drawerBackCallback.isEnabled = false
+            }
+        })
+
+        drawerBackCallback.isEnabled = drawer.isDrawerVisible(GravityCompat.START)
+    }
+
+    private fun confirmSignOut() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Sign out?")
+            .setMessage("You can sign in again to access your account.")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Sign out") { _, _ ->
+                FirebaseAuth.getInstance().signOut()
+                startActivity(Intent(this, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+                finish()
+            }.show()
+    }
+
     private fun updateSelectedTab(position: Int) {
         val itemId = when (position) {
             0 -> R.id.tabAccounts
@@ -178,6 +281,29 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun setupAccountsPage(page: View) {
+        val greeting = page.findViewById<TextView>(R.id.txtDashboardGreeting)
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user != null) {
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(user.uid)
+                .get()
+                .addOnSuccessListener(this) { profile ->
+                    if (FirebaseAuth.getInstance().currentUser?.uid != user.uid)
+                        return@addOnSuccessListener
+
+                    val username = profile.getString("username")?.takeIf { it.isNotBlank() }
+                    greeting.text = if (username != null) {
+                        getString(R.string.dashboard_banner_greeting_username, username)
+                    } else {
+                        getString(R.string.dashboard_banner_greeting)
+                    }
+                }
+                .addOnFailureListener(this) { error ->
+                    Log.w("DashboardActivity", "Could not load banner username", error)
+                }
+        }
         IncomeVsExpensesWidget.bindNavigation(
             page.findViewById(R.id.incomeVsExpensesWidget)
         )

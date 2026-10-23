@@ -56,5 +56,5 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.4")
     implementation("androidx.core:core-splashscreen:1.0.0")
-
+    implementation("androidx.drawerlayout:drawerlayout:1.2.0")
 }

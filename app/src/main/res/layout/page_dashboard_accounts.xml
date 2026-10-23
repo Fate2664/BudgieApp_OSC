@@ -15,6 +15,13 @@
         android:paddingHorizontal="5dp">
 
         <include
+            android:id="@+id/dashboardHeaderBanner"
+            layout="@layout/widget_dashboard_header_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
+
+        <include
             android:id="@+id/expenseStructureWidget"
             layout="@layout/widget_expense_structure"
             android:layout_width="match_parent"
