@@ -1,43 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:paddingBottom="10dp"
-  android:orientation="horizontal"
-  android:gravity="start"
-  android:paddingStart="0dp"
-  android:paddingEnd="32dp">
-  <TextView
-    android:layout_width="40dp"
-    android:layout_height="40dp"
-    android:layout_marginEnd="8dp"
-    android:background="@drawable/baseline_ai_icon"
-    android:gravity="center"
-    android:textStyle="bold"
-    android:textColor="@color/white"
-    android:importantForAccessibility="no" />
-  <LinearLayout
-    android:layout_width="250dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="12dp"
-    android:background="@drawable/bg_chat_ai">
+    android:gravity="start"
+    android:orientation="horizontal"
+    android:paddingStart="0dp"
+    android:paddingEnd="32dp"
+    android:paddingBottom="10dp">
+
     <TextView
-      android:id="@+id/txtMessage"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textColor="@color/soft_black"
-      android:textSize="16sp"
-      android:textIsSelectable="true"
-      tools:text="Based on your spending this month, here are some areas where you could cut back:&#xA;&#xA;1. Groceries: Consider meal planning or buying in bulk.&#xA;&#xA;2. Transport: Consider public transport.&#xA;&#xA;3. Goals: Review your contributions." />
-    <TextView
-      android:id="@+id/txtTimestamp"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="end"
-      android:layout_marginTop="4dp"
-      android:textColor="#666666"
-      android:textSize="12sp"
-      tools:text="10:43" />
-  </LinearLayout>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/baseline_ai_icon"
+        android:gravity="center"
+        android:importantForAccessibility="no"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/bg_chat_ai"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/txtMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/soft_black"
+            android:textIsSelectable="true"
+            android:textSize="16sp"
+            tools:text="Based on your spending this month, here are some areas where you could cut back:&#xA;&#xA;1. Groceries: Consider meal planning or buying in bulk.&#xA;&#xA;2. Transport: Consider public transport.&#xA;&#xA;3. Goals: Review your contributions." />
+
+        <TextView
+            android:id="@+id/txtTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="4dp"
+            android:textColor="#666666"
+            android:textSize="12sp"
+            tools:text="10:43" />
+    </LinearLayout>
 </LinearLayout>

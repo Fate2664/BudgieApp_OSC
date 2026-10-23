@@ -67,7 +67,7 @@ class AIChatController(private val host: AppCompatActivity, private val root: Vi
         presetButtons = prompts.map { (id, prompt) ->
             root.findViewById<View>(id).apply {
                 setOnClickListener {
-                    sendMessage(prompt)
+                    sendMessage(prompt, fromPreset = true)
                 }
             }
         }
@@ -85,7 +85,7 @@ class AIChatController(private val host: AppCompatActivity, private val root: Vi
         status.visibility = if (sending) View.VISIBLE else View.GONE
     }
 
-    private fun sendMessage(rawText: String) {
+    private fun sendMessage(rawText: String, fromPreset: Boolean = false) {
         val question = rawText.trim()
         if (question.isBlank() || sending) return
 
@@ -101,6 +101,9 @@ class AIChatController(private val host: AppCompatActivity, private val root: Vi
         }
 
         sending = true
+        if (fromPreset) {
+            root.findViewById<View>(R.id.presetQuestions).visibility = View.GONE
+        }
         updateControls()
         input.text.clear()
 
