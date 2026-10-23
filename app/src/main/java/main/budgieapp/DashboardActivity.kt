@@ -6,14 +6,18 @@ import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.setPadding
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -26,6 +30,8 @@ import main.budgieapp.widgets.IncomeVsExpensesWidget
 import java.time.ZoneId
 import main.budgieapp.data.TransactionEntity
 import main.budgieapp.data.TransactionRepo
+import main.budgieapp.data.AchievementRepo
+import main.budgieapp.widgets.AchievementPopup
 import main.budgieapp.widgets.AchievementProgressWidget
 import main.budgieapp.widgets.SummaryPieWidget
 
@@ -46,6 +52,7 @@ class DashboardActivity : AppCompatActivity() {
     private var expenseStructureRefreshJob: Job? = null
     private var selectedExpenseRange = CashFlowTimeRange.LAST_30_DAYS
     private var aiChatController: AIChatController? = null
+    private lateinit var achievementPopup: AchievementPopup
 
 
     private val transactionRepo by lazy {
@@ -56,6 +63,8 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_dashboard)
+        achievementPopup = AchievementPopup(findViewById<ConstraintLayout>(R.id.main))
+        observeAchievementNotifications()
 
         val root = findViewById<View>(R.id.main)
         ViewCompat.setOnApplyWindowInsetsListener(root) { view, inserts ->
@@ -224,7 +233,31 @@ class DashboardActivity : AppCompatActivity() {
             }
 
             launch {
-                AchievementProgressWidget.refresh(page.findViewById<View>(R.id.achievementsWidget))
+                AchievementProgressWidget.refresh(
+                    page.findViewById<View>(R.id.achievementsWidget)
+                )
+            }
+        }
+    }
+
+    private fun observeAchievementNotifications() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                    ?: return@repeatOnLifecycle
+                try {
+                    val repo = AchievementRepo.forCurrentUser()
+                    repo.refreshAndGetEarned(forceRefresh = true)
+                    repo.observePendingNotifications().collect { pending ->
+                        if (FirebaseAuth.getInstance().currentUser?.uid == uid) {
+                            achievementPopup.show(uid, pending)
+                        }
+                    }
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (error: Exception) {
+                    Log.e("DashboardActivity", "Could not load achievement notifications", error)
+                }
             }
         }
     }

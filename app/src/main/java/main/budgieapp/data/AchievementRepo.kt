@@ -5,11 +5,20 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.rpc.BadRequest
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.YearMonth
 import java.time.ZoneId
+import kotlin.compareTo
+import kotlin.text.compareTo
 
 class AchievementRepo private constructor(private val uid: String) {
     private val auth = FirebaseAuth.getInstance()
@@ -26,16 +35,87 @@ class AchievementRepo private constructor(private val uid: String) {
         }
     }
 
-    suspend fun refreshAndGetEarned(): Set<String> {
+    suspend fun refreshAndGetEarned(forceRefresh: Boolean = false): Set<String> {
+        return refreshMutex.withLock {
+            requireCurrentUser()
+
+            val cached = synchronized(cache) { cache[uid] }
+            if (!forceRefresh && cached != null && android.os.SystemClock.elapsedRealtime() - cached.refreshedAt < CACHE_DURATION_MS) {
+                return@withLock cached.earned
+            }
+
+            val earned = calculateAndSaveEarned()
+            requireCurrentUser()
+            synchronized(cache) {
+                cache[uid] = CachedAchievements(
+                    earned = earned.toSet(),
+                    refreshedAt = android.os.SystemClock.elapsedRealtime()
+                )
+            }
+            earned
+        }
+    }
+
+    // Missing flags belong to legacy achievements and are intentionally silent.
+    fun observePendingNotifications(): Flow<Set<String>> = callbackFlow {
+        requireCurrentUser()
+        val registration = achievements.addSnapshotListener(
+            com.google.firebase.firestore.MetadataChanges.INCLUDE
+        ) { snapshot, error ->
+            if (error != null) {
+                close(error)
+            } else if (auth.currentUser?.uid != uid) {
+                close(IllegalStateException("The signed-in account has changed"))
+            } else if (snapshot != null && !snapshot.metadata.isFromCache &&
+                !snapshot.metadata.hasPendingWrites()
+            ) {
+                trySend(snapshot.documents.filter {
+                    it.id in ALL_IDS && it.getBoolean("earned") == true &&
+                        it.getBoolean("notificationShown") == false
+                }.map { it.id }.toSet())
+            }
+        }
+        awaitClose { registration.remove() }
+    }
+
+    // Claim before display to prevent repeats across devices and app restarts.
+    suspend fun claimNotification(id: String): Boolean {
+        require(id in ALL_IDS)
+        requireCurrentUser()
+        val claimed = firestore.runTransaction { operation ->
+            requireCurrentUser()
+            val document = achievements.document(id)
+            val snapshot = operation.get(document)
+            if (snapshot.getBoolean("earned") != true ||
+                snapshot.getBoolean("notificationShown") != false
+            ) {
+                false
+            } else {
+                operation.update(document, mapOf(
+                    "notificationShown" to true,
+                    "notificationShownAt" to FieldValue.serverTimestamp()
+                ))
+                true
+            }
+        }.await()
+        requireCurrentUser()
+        return claimed
+    }
+
+    private suspend fun calculateAndSaveEarned(): Set<String> = coroutineScope {
         requireCurrentUser()
 
         val budgetRepo = BudgetRepo.forCurrentUser()
         val goalRepo = GoalRepo.forCurrentUser()
         val transactionRepo = TransactionRepo.forCurrentUser()
 
-        val budgets = budgetRepo.getAll()
-        val goals = goalRepo.getAll()
-        val transactions = transactionRepo.getAll()
+        val budgetsDeferred = async { budgetRepo.getAll() }
+        val goalsDeferred = async { goalRepo.getAll() }
+        val transactionsDeferred = async { transactionRepo.getAll() }
+
+        val budgets = budgetsDeferred.await()
+        val goals = goalsDeferred.await()
+        val transactions = transactionsDeferred.await()
 
         requireCurrentUser()
 
@@ -118,7 +198,11 @@ class AchievementRepo private constructor(private val uid: String) {
             for (achievementId in eligibleNow - previouslyEarned) {
                 operation.set(
                     achievements.document(achievementId),
-                    mapOf("earned" to true, "earnedAt" to FieldValue.serverTimestamp())
+                    mapOf(
+                        "earned" to true,
+                        "earnedAt" to FieldValue.serverTimestamp(),
+                        "notificationShown" to false
+                    )
                 )
             }
 
@@ -126,7 +210,12 @@ class AchievementRepo private constructor(private val uid: String) {
         }.await()
 
         requireCurrentUser()
-        return earned
+        earned
+    }
+
+    fun getCachedEarned(): Set<String>?{
+        requireCurrentUser()
+        return synchronized(cache) { cache[uid]?.earned }
     }
 
     private fun monthOf(timestamp: Long): YearMonth {
@@ -153,7 +242,8 @@ class AchievementRepo private constructor(private val uid: String) {
     ): Boolean {
         if (budget.period != "Monthly" ||
             budget.amountCents <= 0L ||
-            budget.createdAtMillis <= 0L){
+            budget.createdAtMillis <= 0L
+        ) {
             return false
         }
 
@@ -161,15 +251,15 @@ class AchievementRepo private constructor(private val uid: String) {
         var consecutiveMonths = 0
         val limit = BigDecimal.valueOf(budget.amountCents)
 
-        while (month < currentMonth){
+        while (month < currentMonth) {
             val spent = spending[budget.categoryId to month] ?: BigDecimal.ZERO
-            consecutiveMonths = if (spent <= limit){
+            consecutiveMonths = if (spent <= limit) {
                 consecutiveMonths + 1
             } else {
                 0
             }
 
-            if (consecutiveMonths >= 3){
+            if (consecutiveMonths >= 3) {
                 return true
             }
 
@@ -178,13 +268,14 @@ class AchievementRepo private constructor(private val uid: String) {
         return false
     }
 
-    companion object{
+    companion object {
         const val FIRST_STEP = "first_step"
         const val HALFWAY_THERE = "halfway_there"
         const val GOAL_ACHIEVED = "goal_achieved"
         const val CONSISTENT_SAVER = "consistent_saver"
         const val WITHIN_BUDGET = "within_budget"
         const val GOAL_EXPLORER = "goal_explorer"
+        private const val CACHE_DURATION_MS = 30_000L
 
         val ALL_IDS = listOf(
             FIRST_STEP,
@@ -196,10 +287,18 @@ class AchievementRepo private constructor(private val uid: String) {
         )
 
         fun forCurrentUser(): AchievementRepo {
-            val uid = requireNotNull(FirebaseAuth.getInstance().currentUser){
+            val uid = requireNotNull(FirebaseAuth.getInstance().currentUser) {
                 "Sign in before accessing achievements"
             }.uid
             return AchievementRepo(uid)
         }
+
+        private data class CachedAchievements(
+            val earned: Set<String>,
+            val refreshedAt: Long
+        )
+
+        private val cache = mutableMapOf<String, CachedAchievements>()
+        private val refreshMutex = Mutex()
     }
 }

@@ -98,6 +98,32 @@ object SampleTransactions {
                     )
                 )
             }
+
+            val zone = java.time.ZoneId.of("Africa/Johannesburg")
+            val currentMonth = java.time.YearMonth.now(zone)
+
+            for (monthsAgo in 1L..2L) {
+                val month = currentMonth.minusMonths(monthsAgo)
+                val timestamp = month.atDay(15)
+                    .atTime(12, 0)
+                    .atZone(zone)
+                    .toInstant()
+                    .toEpochMilli()
+
+                add(
+                    transaction(
+                        id = "streak-food-$month",
+                        type = "EXPENSE",
+                        amountCents = 20_000L, //R200
+                        description = "Budget steak demo",
+                        payee = "Demo supermarket",
+                        categoryId = "food",
+                        categoryName = "Food",
+                        colorRes = R.color.category_red,
+                        daysAgo = 0L
+                    ).copy(dateTimeMillis = timestamp)
+                )
+            }
         }
     }
 }

@@ -18,7 +18,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import main.budgieapp.Category
 import main.budgieapp.R
+import main.budgieapp.data.BudgetEntity
 import main.budgieapp.data.BudgetRepo
+import main.budgieapp.data.TransactionEntity
 import main.budgieapp.data.TransactionRepo
 import org.json.JSONArray
 import org.json.JSONException
@@ -26,10 +28,13 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
 import java.time.DayOfWeek
+import java.time.Instant
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
+import kotlin.math.exp
 
 object BudgetsWidget {
 
@@ -298,6 +303,23 @@ object BudgetsWidget {
             } else {
                 ""
             }
+            val consecutiveMonths = if (selectedPeriod == "Monthly") {
+                calculateBudgetStreak(
+                    budgets = budgets,
+                    expenses = expenses,
+                    today = today,
+                    zone = zone
+                )
+            } else {
+                0
+            }
+
+            renderBudgetStreak(
+                root = root,
+                selectedPeriod = selectedPeriod,
+                constructiveMonths = consecutiveMonths
+            )
+
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (error: Exception) {
@@ -311,6 +333,65 @@ object BudgetsWidget {
             percentageText.text = ""
             summaryBar.progress = 0
         }
+    }
+
+    private fun calculateBudgetStreak(
+        budgets: List<BudgetEntity>,
+        expenses: List<TransactionEntity>,
+        today: LocalDate,
+        zone: ZoneId
+    ): Int {
+        val monthlyBudgets = budgets.filter {
+            it.period == "Monthly" &&
+                    it.amountCents > 0L &&
+                    it.createdAtMillis > 0L
+        }
+
+        if (monthlyBudgets.isEmpty()) return 0
+
+        fun monthOf(timestamp: Long): YearMonth =
+            YearMonth.from(Instant.ofEpochMilli(timestamp).atZone(zone))
+
+        val budgetsWithStartMonth = monthlyBudgets.map { budget ->
+            budget to monthOf(budget.createdAtMillis).plusMonths(1)
+        }
+
+        val firstEligibleMonth = budgetsWithStartMonth.minOf { it.second }
+        val currentMonth = YearMonth.from(today)
+        val spendingByCategoryAndMonth = expenses.asSequence().filter {
+            it.type == "EXPENSE" &&
+                    it.status == "Cleared" &&
+                    it.amountCents > 0L &&
+                    it.dateTimeMillis > 0L
+        }.filter { monthOf(it.dateTimeMillis) < currentMonth }
+            .groupBy { it.categoryId to monthOf(it.dateTimeMillis) }
+            .mapValues { (_, transactions) ->
+                transactions.fold(BigDecimal.ZERO) { total, transaction ->
+                    total.add(BigDecimal.valueOf(transaction.amountCents))
+                }
+            }
+        var month = currentMonth.minusMonths(1)
+        var streak = 0
+
+        while (month >= firstEligibleMonth) {
+            val applicableBudgets = budgetsWithStartMonth
+                .filter { (_, startMonth) -> startMonth <= month }
+                .map { (budget, _) -> budget }
+
+            if (applicableBudgets.isEmpty()) break
+
+            val withinBudget = applicableBudgets.all { budget ->
+                val spent =
+                    spendingByCategoryAndMonth[budget.categoryId to month] ?: BigDecimal.ZERO
+                spent <= BigDecimal.valueOf(budget.amountCents)
+            }
+
+            if (!withinBudget) break
+
+            streak++
+            month = month.minusMonths(1)
+        }
+        return streak
     }
 
     private fun renderBudgetStreak(root: View, selectedPeriod: String, constructiveMonths: Int) {

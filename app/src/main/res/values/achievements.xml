@@ -4,6 +4,8 @@
     <string name="achievements_loading">Loading achievements…</string>
     <string name="achievements_load_error">Could not load achievements. Please reopen this page to retry.</string>
     <string name="achievements_widget_error">Could not load achievements</string>
+    <string name="achievement_popup_unlocked">Achievement unlocked</string>
+    <string name="achievement_popup_dismiss">Dismiss achievement notification</string>
 
     <plurals name="achievements_earned_count">
         <item quantity="one">%d achievement earned</item>

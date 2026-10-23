@@ -189,6 +189,7 @@ class ExpenseStructureWidget(private val rootView: View) {
 
     fun setTransactions(transactions: List<TransactionEntity>) {
         this.transactions = transactions
+        includeIncomeCheckbox.isEnabled = true
         rebuild()
     }
 
@@ -212,16 +213,12 @@ class ExpenseStructureWidget(private val rootView: View) {
         incomeCents = transactions.filter { it.type == TransactionType.INCOME.name }
             .sumOf { it.amountCents }
 
-        if (includeIncomeCheckbox.isChecked) {
-            val availableCents = incomeCents - expenseCents
-
-            if (availableCents > 0L) {
-                categories = categories + CategoryExpense(
-                    name = "Available",
-                    color = rootView.context.getColor(R.color.light_green),
-                    amountCents = availableCents
-                )
-            }
+        if (includeIncomeCheckbox.isChecked && incomeCents > 0L) {
+            categories = categories + CategoryExpense(
+                name = "Income",
+                color = rootView.context.getColor(R.color.light_green),
+                amountCents = incomeCents
+            )
         }
 
         totalCents = categories.sumOf { it.amountCents }
@@ -275,6 +272,7 @@ class ExpenseStructureWidget(private val rootView: View) {
         transactions = emptyList()
         incomeCents = 0L
         expenseCents = 0L
+        includeIncomeCheckbox.isEnabled = false
         categories = emptyList()
         totalCents = 0L
         totalLabel.text = "—"

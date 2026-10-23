@@ -23,28 +23,41 @@ object AchievementProgressWidget {
         }
     }
 
-    suspend fun refresh(root: View) {
+    suspend fun refresh(root: View, onEarnedLoaded: (Set<String>) -> Unit = {}) {
         val count = root.findViewById<TextView>(R.id.txtAchievementsEarned)
+        val repo = AchievementRepo.forCurrentUser()
+        val cached = repo.getCachedEarned()
 
-        count.setText(R.string.achievements_loading)
-
-        try {
-            val earned = AchievementRepo.forCurrentUser().refreshAndGetEarned()
-
+        fun showCount(earned: Set<String>){
             count.text = root.resources.getQuantityString(
                 R.plurals.achievements_earned_count,
                 earned.size,
                 earned.size
             )
-        } catch (cancelled: CancellationException){
+        }
+
+        if (cached != null){
+            showCount(cached)
+        } else {
+            count.setText(R.string.achievements_loading)
+        }
+
+        try {
+            val earned = repo.refreshAndGetEarned()
+            showCount(earned)
+            onEarnedLoaded(earned)
+        } catch (cancelled: CancellationException) {
             throw cancelled
-        } catch (error: Exception){
+        } catch (error: Exception) {
             Log.e(
                 "AchievementProgressWidget",
                 "Could not load achievements",
                 error
             )
-            count.setText(R.string.achievements_widget_error)
+
+            if (cached == null) {
+                count.setText(R.string.achievements_widget_error)
+            }
         }
     }
 }

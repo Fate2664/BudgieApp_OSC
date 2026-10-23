@@ -221,6 +221,8 @@ object GoalsWidget {
         val validTarget = targetCents > 0L
         val saved = savedCents.max(BigDecimal.ZERO)
         var target = BigDecimal.valueOf(targetCents)
+        val milestoneColor =
+            Color.argb(255, Color.red(goalColor), Color.green(goalColor), Color.blue(goalColor))
 
         fun requireCents(percent: Int): BigDecimal =
             target.multiply(
@@ -245,8 +247,8 @@ object GoalsWidget {
 
             circle.background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(if (reached) goalColor else Color.WHITE)
-                setStroke(strokeWidth, if (reached || next) goalColor else grey)
+                setColor(if (reached) milestoneColor else Color.WHITE)
+                setStroke(strokeWidth, if (reached || next) milestoneColor else grey)
             }
 
             circle.text = if (reached) "\u2713" else ""
@@ -276,7 +278,7 @@ object GoalsWidget {
             }
         }
 
-        fill.setBackgroundColor(goalColor)
+        fill.setBackgroundColor(milestoneColor)
         fill.post {
             val firstCircle = milestones.first().second
             val endIndex = when {

@@ -62,22 +62,19 @@ class AchievementsActivity : AppCompatActivity() {
 
         val count = findViewById<TextView>(R.id.txtAchievementsCount)
         val grid = findViewById<View>(R.id.achievementsGrid)
+        val repo = AchievementRepo.forCurrentUser()
+        val cached = repo.getCachedEarned()
 
-        count.setText(R.string.achievements_loading)
-        grid.visibility = View.INVISIBLE
+        if (cached != null) {
+            showAchievements(cached)
+        } else {
+            count.setText(R.string.achievements_loading)
+            grid.visibility = View.INVISIBLE
+        }
 
         refreshJob = lifecycleScope.launch {
             try {
-                val earned = AchievementRepo.forCurrentUser().refreshAndGetEarned()
-                renderAchievements(earned)
-
-                count.text = getString(
-                    R.string.achievements_count,
-                    earned.size,
-                    AchievementRepo.ALL_IDS.size
-                )
-
-                grid.visibility = View.VISIBLE
+                showAchievements(repo.refreshAndGetEarned())
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
@@ -86,8 +83,11 @@ class AchievementsActivity : AppCompatActivity() {
                     "Could not load achievements",
                     error
                 )
-                count.setText(R.string.achievements_load_error)
-                grid.visibility = View.GONE
+
+                if (cached == null) {
+                    count.setText(R.string.achievements_load_error)
+                    grid.visibility = View.GONE
+                }
             }
         }
     }
@@ -212,6 +212,17 @@ class AchievementsActivity : AppCompatActivity() {
                 )
             )
         }
+    }
+
+    private fun showAchievements(earned: Set<String>) {
+        renderAchievements(earned)
+        findViewById<TextView>(R.id.txtAchievementsCount).text = getString(
+            R.string.achievements_count,
+            earned.size,
+            AchievementRepo.ALL_IDS.size
+        )
+
+        findViewById<View>(R.id.achievementsGrid).visibility = View.VISIBLE
     }
 
     private data class AchievementCardUi(
