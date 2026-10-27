@@ -37,7 +37,7 @@ Budgie is an Android budgeting app built for the OPSC7311 module at IIE Vega Sch
 
 Many budgeting apps overwhelm people with detail. Budgie takes the opposite approach: a clean interface, graphs and widgets that explain your finances at a glance, and an envelope-style system that helps you stay disciplined with your money.
 
-**Explanation Video:** [.github/workflows/build.yml](https://drive.google.com/file/d/1DqNrZjU0joTLe8lqwvnjoWJiYBAQyLBK/view?usp=sharing)
+**Explanation Video:** (https://drive.google.com/file/d/1DqNrZjU0joTLe8lqwvnjoWJiYBAQyLBK/view?usp=sharing)
 
 ---
 
